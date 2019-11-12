@@ -1,5 +1,7 @@
 package logic;
 
+import io.HighScoreManager;
+import io.Score;
 import javafx.application.Application;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -54,7 +56,9 @@ public class GameEngine extends Application{
 		
 	}
 	
-	public static void main(String args[]){          
+	public static void main(String args[]){   
+		HighScoreManager hm = HighScoreManager.getInstance();
+		System.out.println(hm.readHighScoreFile());
 	      launch(args);    
 	
 	}

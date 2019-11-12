@@ -14,9 +14,11 @@ public class HighScoreManager{
   
     //private constructor.
     private HighScoreManager(){
+    	
+      fileName = "scores.txt";
       try{
    
-      file = new File("scores.txt");
+      file = new File(fileName);
       
       // creates the file
       if(file.createNewFile()){
@@ -25,7 +27,7 @@ public class HighScoreManager{
       writer = new FileWriter(file); 
       
       // Writes the content to the file
-      writer.write("gürkan\n5\nsumut\n1"); 
+      writer.write("gurkan\n5\nsumut\n1\nDoe\n14"); 
       writer.flush();
       writer.close();
       }
@@ -63,7 +65,7 @@ public class HighScoreManager{
       int counter = 1;
       int first=0;
       int last=0;
-      System.out.println(sc);
+      //System.out.println(sc);
       for (int i = 0; i < o.length(); i++) {
         if (con == false && o.charAt(i) == '\n' && counter == 1){
             first = i+1;
@@ -73,14 +75,14 @@ public class HighScoreManager{
           last = i;
           counter = 1;
           con = true;
-          System.out.println("o");
+          //System.out.println("o");
         }
         if(con == true && sc<=Integer.parseInt(o.substring(first,last))){
           maxIndex = last+1;
           con = false;
         }
     } 
-      System.out.println(maxIndex);
+      //System.out.println(maxIndex);
       
       String a = o.substring(0,maxIndex);
       String b = o.substring(maxIndex,o.length());
@@ -109,7 +111,7 @@ public class HighScoreManager{
       
       while ((line = bufreader.readLine()) != null) {
        s = s+line+"\n";
-       System.out.println(line);
+       //System.out.println(line);
     }
       reader.close();
       bufreader.close();
