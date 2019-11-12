@@ -84,25 +84,25 @@ public class HighScoreManager{
       System.out.println(scoreValue);
       
       //This algorithm finds the right place on the text for the new score with finding "new line" chars
-      for (int i = 0; i < o.length(); i++) {
-        if (con == false && o.charAt(i) == '\n' && counter == 1){
+      for (int i = 0; i < currentTextString.length(); i++) {
+        if (con == false && currentTextString.charAt(i) == '\n' && counter == 1){
             firstIndexOfNewLine = i+1;
             counter = 2;
         }
-        if(firstIndexOfNewLine != i+1 && o.charAt(i) == '\n' && counter == 2){
+        if(firstIndexOfNewLine != i+1 && currentTextString.charAt(i) == '\n' && counter == 2){
           lastIndexOfNewLine = i;
           counter = 1;
           con = true;
           System.out.println("o");
         }
-        if(con == true && scoreValue<=Integer.parseInt(o.substring(firstIndexOfNewLine,lastIndexOfNewLine))){
+        if(con == true && scoreValue<=Integer.parseInt(currentTextString.substring(firstIndexOfNewLine,lastIndexOfNewLine))){
           indexToWrite = lastIndexOfNewLine+1;
           con = false;
         }
     } 
       
       String firstPartOfTheCurrentText = currentTextString.substring(0,indexToWrite);
-      String lastPartOfTheCurrentText = currentTextString.substring(indexToWrite,o.length());
+      String lastPartOfTheCurrentText = currentTextString.substring(indexToWrite,currentTextString.length());
       
       currentTextString = firstPartOfTheCurrentText + receivedScore.getName() + "\n" + scoreValue +"\n" + lastPartOfTheCurrentText;
       
@@ -111,7 +111,7 @@ public class HighScoreManager{
       writer = new FileWriter(file); 
       
       // Writes the content to the file
-      writer.write(o); 
+      writer.write(currentTextString); 
       writer.flush();
       writer.close();
       }
