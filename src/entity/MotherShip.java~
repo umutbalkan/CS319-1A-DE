@@ -1,0 +1,12 @@
+public class MotherShip extends Enemy{
+
+
+
+  public MotherShip{
+    super();
+  }
+  
+  public void releaseSwarms(){
+    
+  }
+}

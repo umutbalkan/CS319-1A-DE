@@ -1,0 +1,12 @@
+public class Swarmer extends Enemy{
+
+
+
+  public Swarmer{
+    super();
+  }
+  
+  public void follow(Ship ship){
+    
+  }
+}

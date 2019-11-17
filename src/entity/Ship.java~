@@ -1,0 +1,29 @@
+public class Ship{
+  private int score;
+  private int numberOfBombs;
+  private int firingInterval;
+  private int lastFire;
+  
+  public Ship(){
+  
+  
+  }
+
+  public void boostSpeed(){
+  
+  }
+  
+  public void hyperJump(){
+  
+  }
+  
+  public void bomb(){
+  
+  }
+  
+  public void rescueAstronaut(Astronaut astronaut){
+    
+  }
+  
+
+}

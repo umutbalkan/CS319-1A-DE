@@ -1,0 +1,5 @@
+public class Astronaut{
+  private boolean onLand;
+  
+
+}
