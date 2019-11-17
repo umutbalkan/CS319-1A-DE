@@ -1,35 +1,57 @@
 package logic;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+
 import io.HighScoreManager;
 import io.Score;
 import javafx.application.Application;
+import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundImage;
+import javafx.scene.layout.BackgroundPosition;
+import javafx.scene.layout.BackgroundRepeat;
+import javafx.scene.layout.BackgroundSize;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 
 
 public class GameEngine extends Application{
 	
+	
+	private static GameEngine game = new GameEngine();
+	
 	// GUI ELEMENTS
-	private Scene main,credits,settings,play,highscores;
+	private Scene main;
 	private Stage window;
 	private int width;
 	private int height;
 	private int canvas_w, canvas_h;
 	private int minicanvas_w_left, minicanvas_w_middle, minicanvas_w_right, minicanvas_h;
 	private Button playB, settingsB, creditsB, highscoresB, quitB,backB, backB1, backB2;
-	private Label def_label, cred_label, sett_label, high_label;
+	private Label defender_label, cred_label, sett_label, high_label;
 	private VBox layoutMain, layoutSettings, layoutCredits, layoutHighscores;
-	private VBox root;
+	private VBox layoutPlay;
 	private HBox topHBox;
 	private Canvas canvas;
 	private GraphicsContext g;
@@ -40,27 +62,43 @@ public class GameEngine extends Application{
 	private Line separator_Hline;
 	private Line separator_Vline1;
 	private Line separator_Vline2;
+	private Background background;
+	private Font font,font2;
+	private StackPane layout;
+	private ObservableList<Node> layoutStack;
+	private Label planet_label;
 	
+	@Override
+	public void init() throws Exception{
+		System.out.println("Game - initializing ui widgets & layouts");
+	}
+	
+	
+	public static GameEngine getInstance() {
+		return game;
+	}
 	
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		setPrimitiveAttributes();
 		window = primaryStage;
-		window.setTitle("Defender");
-		root = new VBox();
-		  	
+		window.setTitle("Planet Defender");
+		
+		layout = new StackPane(); 
+		layoutStack = layout.getChildren();
+		
+		
 		// Display
 		view();
+		layoutStack.add(layoutMain);
 		window.setScene(main); // change this to 'main' later.
 		window.show();
 		
 	}
 	
-	public static void main(String args[]){   
-		HighScoreManager hm = HighScoreManager.getInstance();
-		System.out.println(hm.readHighScoreFile());
-	      launch(args);    
 	
+	public void stop() throws Exception{
+		System.out.println("Game - Terminating.");
 	}
 	
 	
@@ -76,6 +114,28 @@ public class GameEngine extends Application{
 	}
 	
 	private void view() {
+		
+	    try { 
+	        // load a custom font from a specific location
+	        font = Font.loadFont(new FileInputStream(new File("./assets/visitor.ttf")), 56);
+	        font2 = Font.loadFont(new FileInputStream(new File("./assets/visitor.ttf")), 48);
+	        // create a image 
+	        FileInputStream img = new FileInputStream("./assets/menuBG.png");
+	        Image image = new Image(img); 
+	        // create a background image 
+            BackgroundImage backgroundimage = new BackgroundImage(image,  
+                                             BackgroundRepeat.NO_REPEAT,  
+                                             BackgroundRepeat.NO_REPEAT,  
+                                             BackgroundPosition.DEFAULT,  
+                                                BackgroundSize.DEFAULT); 
+  
+            // create Background 
+            background = new Background(backgroundimage); 
+	      } catch (FileNotFoundException e) {
+	        e.printStackTrace();
+	      }
+		
+		
         view_MainMenu();
 		view_CreditsMenu();
 		view_SettingsMenu();
@@ -123,70 +183,135 @@ public class GameEngine extends Application{
         
         // push in layout
 		topHBox = new HBox();
-		
+		layoutPlay = new VBox();
         topHBox.getChildren().addAll(minicanvas_left,separator_Vline1,minicanvas_middle,separator_Vline2,minicanvas_right);
-        root.getChildren().addAll(topHBox,separator_Hline,canvas);
+        layoutPlay.getChildren().addAll(topHBox,separator_Hline,canvas);
 	}
 	
 	private void view_MainMenu() {
-		def_label = new Label("D E F E N D E R");
+		planet_label = new Label("PLANET");
+		defender_label = new Label("D E F E N D E R");
+
 		
-		playB = new Button("Play");
-		playB.setOnAction(e->window.setScene(play));
+        defender_label.setFont(font); // use this font with our label
+        planet_label.setFont(font2);
+        defender_label.setTextFill(Color.web("#ffd500")); // set color of label
+        planet_label.setTextFill(Color.web("#ffd500"));
 		
-		play = new Scene(root,width,height);
+		playB = new Button("START");
+		playB.setMaxWidth(100);
+		playB.setOnAction(new EventHandler<ActionEvent>(){
+            @Override
+            public void handle(ActionEvent event) {
+            	layoutStack.add(layoutPlay);
+                layoutStack.remove(0);
+            }
+        });
 		
 		settingsB = new Button("Settings");
-		settingsB.setOnAction(e -> window.setScene(settings));
+		settingsB.setMaxWidth(100);
+		
+		settingsB.setOnAction(new EventHandler<ActionEvent>(){
+            @Override
+            public void handle(ActionEvent event) {
+            	layoutStack.add(layoutSettings);
+                layoutStack.remove(0);
+            }
+        });
 		
 		highscoresB = new Button("High Scores");
-		highscoresB.setOnAction(e -> window.setScene(highscores));
+		highscoresB.setMaxWidth(100);
+		highscoresB.setOnAction(new EventHandler<ActionEvent>(){
+            @Override
+            public void handle(ActionEvent event) {
+            	layoutStack.add(layoutHighscores);
+                layoutStack.remove(0);
+            }
+        });
 		
 		creditsB = new Button("Credits");
-		creditsB.setOnAction(e -> window.setScene(credits));
+		creditsB.setMaxWidth(100);
+		creditsB.setOnAction(new EventHandler<ActionEvent>(){
+            @Override
+            public void handle(ActionEvent event) {
+            	layoutStack.add(layoutCredits);
+                layoutStack.remove(0);
+            }
+        });
 		
 		// QUIT HERE
 		quitB = new Button("Quit");
+		quitB.setMaxWidth(100);
 		quitB.setOnAction(e -> window.close());
 		
-		layoutMain = new VBox(20);
+		layoutMain = new VBox(30);
+		layoutMain.setBackground(background);
 		layoutMain.setAlignment(Pos.CENTER);
-		layoutMain.getChildren().addAll(def_label,playB,settingsB,highscoresB,creditsB,quitB);
-		main = new Scene(layoutMain, width,height);	
+		layoutMain.getChildren().addAll(planet_label,defender_label,playB,settingsB,highscoresB,creditsB,quitB);
+
+		main = new Scene(layout, width,height);
+		
 	}
 	
 	private void view_CreditsMenu() {
 		cred_label = new Label("Credits");
+		cred_label.setFont(font);
+		cred_label.setTextFill(Color.web("#ffd500"));
+		
 		backB = new Button("Back");
-		backB.setOnAction(e -> window.setScene(main));
+		backB.setMaxWidth(100);
+		backB.setOnAction(new EventHandler<ActionEvent>(){
+            @Override
+            public void handle(ActionEvent event) {
+            	layoutStack.add(layoutMain);
+                layoutStack.remove(0);
+            }
+        });
 		
 		layoutCredits = new VBox(20);
+		layoutCredits.setBackground(background);
 		layoutCredits.setAlignment(Pos.CENTER);
 		layoutCredits.getChildren().addAll(cred_label, backB);
-		credits = new Scene(layoutCredits, width, height);
 	}
 	
 	private void view_SettingsMenu() {
 		sett_label = new Label("Settings");
+		sett_label.setFont(font);
+		sett_label.setTextFill(Color.web("#ffd500"));
+		
 		backB1 = new Button("Back");
-		backB1.setOnAction(e -> window.setScene(main));
+		backB1.setOnAction(new EventHandler<ActionEvent>(){
+            @Override
+            public void handle(ActionEvent event) {
+            	layoutStack.add(layoutMain);
+                layoutStack.remove(0);
+            }
+        });
 		
 		layoutSettings = new VBox(20);
+		layoutSettings.setBackground(background);
 		layoutSettings.setAlignment(Pos.CENTER);
 		layoutSettings.getChildren().addAll(sett_label, backB1);
-		settings = new Scene(layoutSettings, width, height);
 	}
 
 	private void view_HighScoresMenu() {
 		high_label = new Label("High Scores");
+		high_label.setFont(font);
+		high_label.setTextFill(Color.web("#ffd500"));
+		
 		backB2 = new Button("Back");
-		backB2.setOnAction(e -> window.setScene(main));
+		backB2.setOnAction(new EventHandler<ActionEvent>(){
+            @Override
+            public void handle(ActionEvent event) {
+            	layoutStack.add(layoutMain);
+                layoutStack.remove(0);
+            }
+        });
 		
 		layoutHighscores = new VBox(20);
+		layoutHighscores.setBackground(background);
 		layoutHighscores.setAlignment(Pos.CENTER);
 		layoutHighscores.getChildren().addAll(high_label, backB2);
-		highscores = new Scene(layoutHighscores, width, height);
-		
 		
 	}
 	
