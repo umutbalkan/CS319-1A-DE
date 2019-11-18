@@ -1,14 +1,14 @@
 # Group 1A - Defender
 Defender is a horizontally scrolling shoot 'em up, the game is set on an unnamed planet where the player must defeat waves of invading aliens while protecting astronauts. Its original creator is [Eugene Jarvis](https://en.wikipedia.org/wiki/Eugene_Jarvis)
 
-![Defender inaction](https://i.ibb.co/H4VgmYF/Screen-Shot-2019-11-18-at-21-12-25.png)
+![Defender inaction](https://i.ibb.co/dMkM4jD/mainmenu.png)
 
 ### 1980 Version
  Emulated version of [Defender](https://www.retrogames.cz/play_178-DOS.php?language=EN) on DOSBox.
- 
+
  Game size: 21 kB
 
-### Group Members 
+### Group Members
 ```
  * S. Umut Balkan
  * Gurkan Gur
