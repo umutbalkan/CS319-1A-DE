@@ -1,6 +1,7 @@
-gurkan
-5
-sumut
-1
-Doe
-14
+John 450
+Alex 350
+Igor 340
+Matt 300
+Josh 275
+Walt 255
+Sasa 185

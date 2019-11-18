@@ -27,7 +27,7 @@ public class HighScoreManager{
       writer = new FileWriter(file); 
       
       // Writes the content to the file
-      writer.write("gurkan\n5\nsumut\n1\nDoe\n14"); 
+      writer.write("John 450\nAlex 350\nIgor 340\nMatt 300\nJosh 275\nWalt 255\nSasa 185"); 
       writer.flush();
       writer.close();
       }

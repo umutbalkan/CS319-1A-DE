@@ -42,6 +42,7 @@ public class GameEngine extends Application{
 	
 	
 	private static GameEngine game = new GameEngine();
+	private HighScoreManager highscoreManager;
 	
 	// GUI ELEMENTS
 	private Scene main;
@@ -61,23 +62,22 @@ public class GameEngine extends Application{
 	private Canvas minicanvas_left;
 	private Canvas minicanvas_middle;
 	private Canvas minicanvas_right;
-	private Line separator_Hline;
-	private Line separator_Vline1;
-	private Line separator_Vline2;
 	private Background background;
 	private Font font,font2;
 	private StackPane layout;
 	private ObservableList<Node> layoutStack;
 	private Label planet_label;
-	private ImageView b_img;
-
-	private Label play_label;
-
+	private Image littleShip_img,bomb_img,playBG_img;
+	private String scores;
+	private Label scores_label;
+	private Label credNames_label;
 	private Font fontButton;
 	
 	@Override
 	public void init() throws Exception{
 		System.out.println("Game - initializing ui widgets & layouts");
+		highscoreManager = HighScoreManager.getInstance();
+		scores = highscoreManager.readHighScoreFile();
 	}
 	
 	
@@ -135,15 +135,20 @@ public class GameEngine extends Application{
                                              BackgroundRepeat.NO_REPEAT,  
                                              BackgroundRepeat.NO_REPEAT,  
                                              BackgroundPosition.DEFAULT,  
-                                                BackgroundSize.DEFAULT); 
+                                             new BackgroundSize(1.0, 1.0, true, true, false, false)); 
   
             // create Background 
-            background = new Background(backgroundimage); 
+            background = new Background(backgroundimage);    
             
-            FileInputStream input =new FileInputStream("./assets/buttonSprite.png");  
-            Image button_img = new Image(input);  
-            b_img =new ImageView(button_img); 
+            // image files
+            FileInputStream litteship_file = new FileInputStream("./assets/littleship.png");
+            littleShip_img = new Image(litteship_file); 
             
+            FileInputStream bomb_file = new FileInputStream("./assets/bomb.png");
+            bomb_img = new Image(bomb_file); 
+            
+            FileInputStream playBG_file = new FileInputStream("./assets/playBG.png");
+            playBG_img = new Image(playBG_file); 
             
 	      } catch (FileNotFoundException e) {
 	        e.printStackTrace();
@@ -164,6 +169,7 @@ public class GameEngine extends Application{
         minicanvas_middle = new Canvas(minicanvas_w_middle, minicanvas_h);
         minicanvas_right = new Canvas(minicanvas_w_right, minicanvas_h);
         
+        
 		
         // set GraphicsContext object
         g = canvas.getGraphicsContext2D();
@@ -171,35 +177,66 @@ public class GameEngine extends Application{
         mini_g_middle = minicanvas_middle.getGraphicsContext2D();
         mini_g_right = minicanvas_right.getGraphicsContext2D();
         
+       
+        
         // separator
-        separator_Hline = new Line(0, minicanvas_h-4, width, minicanvas_h-4);
-        separator_Hline.setStroke(Color.BLUE);
-        separator_Hline.setStrokeWidth(4);
+//        separator_Hline = new Line(0, minicanvas_h-4, width, minicanvas_h-4);
+//        separator_Hline.setStroke(Color.GRAY);
+//        separator_Hline.setStrokeWidth(4);
         
-        separator_Vline1 = new Line(minicanvas_w_left, 0,minicanvas_w_left , minicanvas_h-4);
-        separator_Vline1.setStroke(Color.BLUE);
-        separator_Vline1.setStrokeWidth(4);
-        
-        separator_Vline2 = new Line(minicanvas_w_middle+minicanvas_w_left, 0,minicanvas_w_middle+minicanvas_w_left, minicanvas_h-4);
-        separator_Vline2.setStroke(Color.BLUE);
-        separator_Vline2.setStrokeWidth(4);
+//        separator_Vline1 = new Line(minicanvas_w_left, 0,minicanvas_w_left , minicanvas_h-4);
+//        separator_Vline1.setStroke(Color.GRAY);
+//        separator_Vline1.setStrokeWidth(4);
+//        
+//        separator_Vline2 = new Line(minicanvas_w_middle+minicanvas_w_left, 0,minicanvas_w_middle+minicanvas_w_left, minicanvas_h-4);
+//        separator_Vline2.setStroke(Color.GRAY);
+//        separator_Vline2.setStrokeWidth(4);
         
         
         // set colors for graphics contexts for all canvas
-        g.setFill(Color.GRAY);
+        g.setFill(Color.BLACK);
         g.fillRect(0, 0, canvas_w, canvas_h);
+        
         mini_g_left.setFill(Color.BLACK);
         mini_g_left.fillRect(0, 0, minicanvas_w_left, minicanvas_h);
-        mini_g_middle.setFill(Color.GREEN);
-        mini_g_middle.fillRect(0, 0, minicanvas_w_middle, minicanvas_h);
+        
+        
         mini_g_right.setFill(Color.BLACK);
         mini_g_right.fillRect(0, 0, minicanvas_w_right, minicanvas_h);
+        
+        
+        mini_g_middle.setFill(Color.BLACK);
+        mini_g_middle.fillRect(0, 0, minicanvas_w_middle, minicanvas_h);
+        mini_g_middle.setStroke(Color.GRAY);
+        mini_g_middle.setLineWidth(4);
+        mini_g_middle.strokeLine(0, 0, 0, minicanvas_h);
+        mini_g_middle.strokeLine(minicanvas_w_middle, 0, minicanvas_w_middle, minicanvas_h);
+
+        
+
+        
+        // draw Graphics
+        mini_g_left.drawImage(littleShip_img, 20, 20);
+        mini_g_left.drawImage(littleShip_img, 80, 20);
+        mini_g_left.drawImage(littleShip_img, 140, 20);
+        
+        mini_g_left.drawImage(bomb_img, minicanvas_w_left-48,minicanvas_h-32 );
+        mini_g_left.drawImage(bomb_img, minicanvas_w_left-48,minicanvas_h-32-32);
+        mini_g_left.drawImage(bomb_img, minicanvas_w_left-48,minicanvas_h-32-32-32);
+        
+        // draw background and horizontal gray line
+        g.drawImage(playBG_img, 0, 0,width,height);
+        g.setStroke(Color.GRAY);
+        g.setLineWidth(4);
+        g.strokeLine(0, 0, width, 0);
+        
+ 
         
         // push in layout
 		topHBox = new HBox();
 		layoutPlay = new VBox();
-        topHBox.getChildren().addAll(minicanvas_left,separator_Vline1,minicanvas_middle,separator_Vline2,minicanvas_right);
-        layoutPlay.getChildren().addAll(topHBox,separator_Hline,canvas);
+        topHBox.getChildren().addAll(minicanvas_left,minicanvas_middle,minicanvas_right);
+        layoutPlay.getChildren().addAll(topHBox,canvas);
 	}
 	
 	private void view_MainMenu() {
@@ -269,7 +306,7 @@ public class GameEngine extends Application{
 		creditsB = new Button("> CREDITS");
 		creditsB.setMnemonicParsing(true);
 		creditsB.setFont(fontButton);
-		creditsB.setTextFill(Color.web("#b33434"));
+		creditsB.setTextFill(Color.web("#b33434")); //selected color: #ff5e5e
 		creditsB.setMaxWidth(300);
 		creditsB.setWrapText(true);
 		creditsB.setPadding(Insets.EMPTY);
@@ -307,6 +344,10 @@ public class GameEngine extends Application{
 		cred_label.setFont(font);
 		cred_label.setTextFill(Color.web("#ffd500"));
 		
+		credNames_label = new Label("Gurkan Gur\nUmut Balkan");
+		credNames_label.setFont(fontButton);
+		credNames_label.setTextFill(Color.web("#ffd500"));
+		
 		backB = new Button("> BACK");
 		backB.setMnemonicParsing(true);
 		backB.setFont(fontButton);
@@ -326,7 +367,7 @@ public class GameEngine extends Application{
 		layoutCredits = new VBox(20);
 		layoutCredits.setBackground(background);
 		layoutCredits.setAlignment(Pos.CENTER);
-		layoutCredits.getChildren().addAll(cred_label, backB);
+		layoutCredits.getChildren().addAll(cred_label,credNames_label, backB);
 	}
 	
 	private void view_SettingsMenu() {
@@ -361,6 +402,10 @@ public class GameEngine extends Application{
 		high_label.setFont(font);
 		high_label.setTextFill(Color.web("#ffd500"));
 		
+		scores_label = new Label(scores);
+		scores_label.setFont(fontButton);
+		scores_label.setTextFill(Color.web("#ffd500"));
+		
 		backB2 = new Button("> BACK");
 		backB2.setMnemonicParsing(true);
 		backB2.setFont(fontButton);
@@ -380,7 +425,7 @@ public class GameEngine extends Application{
 		layoutHighscores = new VBox(20);
 		layoutHighscores.setBackground(background);
 		layoutHighscores.setAlignment(Pos.CENTER);
-		layoutHighscores.getChildren().addAll(high_label, backB2);
+		layoutHighscores.getChildren().addAll(high_label, scores_label, backB2);
 		
 	}
 	
