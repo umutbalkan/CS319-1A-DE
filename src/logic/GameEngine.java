@@ -307,7 +307,6 @@ public class GameEngine extends Application{
         
         // draw and control ship
         int xmove = 50;
-        int ymove = 5;
         int x = 50;
         int y = 250;
         shipView.setX(x);
