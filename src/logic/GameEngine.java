@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 
 import io.HighScoreManager;
 import io.Score;
+
 import javafx.application.Application;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -20,6 +21,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
+import javafx.scene.control.Slider;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Background;
@@ -35,7 +37,10 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
-
+import javafx.scene.media.AudioClip;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
+import javafx.scene.media.MediaPlayer.Status;
 
 
 public class GameEngine extends Application{
@@ -72,12 +77,19 @@ public class GameEngine extends Application{
 	private Label scores_label;
 	private Label credNames_label;
 	private Font fontButton;
-	
+	private String IDLE_BUTTON_STYLE,HOVERED_BUTTON_STYLE;
+	private MediaPlayer mediaPlayer;
+	private String musicFile;
+	private Media sound;
 	@Override
 	public void init() throws Exception{
 		System.out.println("Game - initializing ui widgets & layouts");
 		highscoreManager = HighScoreManager.getInstance();
 		scores = highscoreManager.readHighScoreFile();
+		IDLE_BUTTON_STYLE = "-fx-text-fill: #b33434;";
+		HOVERED_BUTTON_STYLE = "-fx-text-fill: #ff5e5e;";
+		setPrimitiveAttributes();
+		
 	}
 	
 	
@@ -87,7 +99,10 @@ public class GameEngine extends Application{
 	
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-		setPrimitiveAttributes();
+		String musicFile = "./assets/music.mp3"; 
+		Media sound = new Media(new File(musicFile).toURI().toString());
+		mediaPlayer = new MediaPlayer(sound);
+		
 		window = primaryStage;
 		window.setTitle("Planet Defender");
 		
@@ -98,8 +113,9 @@ public class GameEngine extends Application{
 		// Display
 		view();
 		layoutStack.add(layoutMain);
-		window.setScene(main); // change this to 'main' later.
+		window.setScene(main);
 		window.show();
+		music_play(); 
 		
 	}
 	
@@ -108,6 +124,20 @@ public class GameEngine extends Application{
 		System.out.println("Game - Terminating.");
 	}
 	
+	
+	public void music_play() {
+	    Status status = mediaPlayer.getStatus();
+	    if (status == Status.UNKNOWN || status == Status.HALTED)
+	    {
+	        System.out.println("Player is in a bad or unknown state, can't play.");
+	        return;
+	    }
+	    
+	    if (status == Status.PAUSED || status == Status.STOPPED || status == Status.READY)
+	    {
+	        mediaPlayer.play();
+	    }
+	}
 	
 	private void setPrimitiveAttributes() {
 		width = 1280;
@@ -257,6 +287,8 @@ public class GameEngine extends Application{
 	    playB.setWrapText(true);
 	    playB.setPadding(Insets.EMPTY);
 		playB.setStyle("-fx-background-color: transparent");
+		playB.setOnMouseEntered(e -> playB.setTextFill(Color.web("#ff5e5e")));
+		playB.setOnMouseExited(e -> playB.setTextFill(Color.web("#b33434")));
 		playB.setOnAction(new EventHandler<ActionEvent>(){
             @Override
             public void handle(ActionEvent event) {
@@ -275,6 +307,8 @@ public class GameEngine extends Application{
 		settingsB.setWrapText(true);
 		settingsB.setPadding(Insets.EMPTY);
 		settingsB.setStyle("-fx-background-color: transparent");
+		settingsB.setOnMouseEntered(e -> settingsB.setTextFill(Color.web("#ff5e5e")));
+		settingsB.setOnMouseExited(e -> settingsB.setTextFill(Color.web("#b33434")));
 		settingsB.setOnAction(new EventHandler<ActionEvent>(){
             @Override
             public void handle(ActionEvent event) {
@@ -295,6 +329,8 @@ public class GameEngine extends Application{
 		highscoresB.setWrapText(true);
 		highscoresB.setPadding(Insets.EMPTY);
 		highscoresB.setStyle("-fx-background-color: transparent");
+		highscoresB.setOnMouseEntered(e -> highscoresB.setTextFill(Color.web("#ff5e5e")));
+		highscoresB.setOnMouseExited(e -> highscoresB.setTextFill(Color.web("#b33434")));
 		highscoresB.setOnAction(new EventHandler<ActionEvent>(){
             @Override
             public void handle(ActionEvent event) {
@@ -311,6 +347,8 @@ public class GameEngine extends Application{
 		creditsB.setWrapText(true);
 		creditsB.setPadding(Insets.EMPTY);
 		creditsB.setStyle("-fx-background-color: transparent");
+		creditsB.setOnMouseEntered(e -> creditsB.setTextFill(Color.web("#ff5e5e")));
+		creditsB.setOnMouseExited(e -> creditsB.setTextFill(Color.web("#b33434")));
 		creditsB.setOnAction(new EventHandler<ActionEvent>(){
             @Override
             public void handle(ActionEvent event) {
@@ -328,6 +366,8 @@ public class GameEngine extends Application{
 		quitB.setWrapText(true);
 		quitB.setPadding(Insets.EMPTY);
 		quitB.setStyle("-fx-background-color: transparent");
+		quitB.setOnMouseEntered(e -> quitB.setTextFill(Color.web("#ff5e5e")));
+		quitB.setOnMouseExited(e -> quitB.setTextFill(Color.web("#b33434")));
 		quitB.setOnAction(e -> window.close());
 		
 		layoutMain = new VBox(30);
@@ -356,6 +396,8 @@ public class GameEngine extends Application{
 		backB.setWrapText(true);
 		backB.setPadding(Insets.EMPTY);
 		backB.setStyle("-fx-background-color: transparent");
+		backB.setOnMouseEntered(e -> backB.setTextFill(Color.web("#ff5e5e")));
+		backB.setOnMouseExited(e -> backB.setTextFill(Color.web("#b33434")));
 		backB.setOnAction(new EventHandler<ActionEvent>(){
             @Override
             public void handle(ActionEvent event) {
@@ -383,6 +425,8 @@ public class GameEngine extends Application{
 		backB1.setWrapText(true);
 		backB1.setPadding(Insets.EMPTY);
 		backB1.setStyle("-fx-background-color: transparent");
+		backB1.setOnMouseEntered(e -> backB1.setTextFill(Color.web("#ff5e5e")));
+		backB1.setOnMouseExited(e -> backB1.setTextFill(Color.web("#b33434")));
 		backB1.setOnAction(new EventHandler<ActionEvent>(){
             @Override
             public void handle(ActionEvent event) {
@@ -390,6 +434,13 @@ public class GameEngine extends Application{
                 layoutStack.remove(0);
             }
         });
+		
+		
+//		Slider slider = new Slider();
+//	    slider.setMin(0);
+//	    slider.setMax(1.0);
+//	    slider.setValue(0.5);
+		
 		
 		layoutSettings = new VBox(20);
 		layoutSettings.setBackground(background);
@@ -414,6 +465,8 @@ public class GameEngine extends Application{
 		backB2.setWrapText(true);
 		backB2.setPadding(Insets.EMPTY);
 		backB2.setStyle("-fx-background-color: transparent");
+		backB2.setOnMouseEntered(e -> backB2.setTextFill(Color.web("#ff5e5e")));
+		backB2.setOnMouseExited(e -> backB2.setTextFill(Color.web("#b33434")));
 		backB2.setOnAction(new EventHandler<ActionEvent>(){
             @Override
             public void handle(ActionEvent event) {
