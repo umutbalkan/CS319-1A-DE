@@ -24,6 +24,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.*;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundImage;
 import javafx.scene.layout.BackgroundPosition;
@@ -46,7 +47,7 @@ import javafx.scene.media.MediaPlayer.Status;
 public class GameEngine extends Application{
 	
 	
-	private static GameEngine game = new GameEngine();
+	//private static GameEngine game = new GameEngine();
 	private HighScoreManager highscoreManager;
 	
 	// GUI ELEMENTS
@@ -81,6 +82,19 @@ public class GameEngine extends Application{
 	private MediaPlayer mediaPlayer;
 	private String musicFile;
 	private Media sound;
+	private Label pause_label;
+	private Button pauseB;
+	private Button stopPlayB;
+	private VBox layoutPause;
+
+	private Image ship_img;
+
+	private StackPane botStackPane;
+
+	private Group root;
+
+	private ImageView shipView;
+	
 	@Override
 	public void init() throws Exception{
 		System.out.println("Game - initializing ui widgets & layouts");
@@ -93,16 +107,16 @@ public class GameEngine extends Application{
 	}
 	
 	
-	public static GameEngine getInstance() {
-		return game;
-	}
+//	public static GameEngine getInstance() {
+//		return game;
+//	}
 	
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		String musicFile = "./assets/music.mp3"; 
 		Media sound = new Media(new File(musicFile).toURI().toString());
 		mediaPlayer = new MediaPlayer(sound);
-		
+		mediaPlayer.play();
 		window = primaryStage;
 		window.setTitle("Planet Defender");
 		
@@ -124,13 +138,11 @@ public class GameEngine extends Application{
 		System.out.println("Game - Terminating.");
 	}
 	
-	
 	public static void main(String args[]){   
 		
 	    Application.launch(args);    
 	
 	}
-	
 	
 	
 	public void music_play() {
@@ -157,6 +169,7 @@ public class GameEngine extends Application{
 		canvas_w = width;
 		canvas_h = height - minicanvas_h;
 	}
+	
 	
 	private void view() {
 		
@@ -188,16 +201,25 @@ public class GameEngine extends Application{
             FileInputStream playBG_file = new FileInputStream("./assets/playBG.png");
             playBG_img = new Image(playBG_file); 
             
+            FileInputStream ship_file = new FileInputStream("./assets/ship.png");
+            ship_img = new Image(ship_file);
+            
+            shipView = new ImageView(ship_img);
+            
 	      } catch (FileNotFoundException e) {
 	        e.printStackTrace();
 	      }
 		
-		
+		view_PauseMenu();
         view_MainMenu();
 		view_CreditsMenu();
 		view_SettingsMenu();
 		view_HighScoresMenu();
 		view_PlayScreen();
+	}
+	
+	private void view_map(GraphicsContext g) {
+
 	}
 	
 	private void view_PlayScreen() {
@@ -268,14 +290,115 @@ public class GameEngine extends Application{
         g.setLineWidth(4);
         g.strokeLine(0, 0, width, 0);
         
+        // draw mountains
+		g.setStroke(Color.BROWN);
+        g.setLineWidth(2);
+        g.strokeLine(0, canvas_h-100,100,canvas_h-100);
+        g.strokeLine(100, canvas_h-100,200,canvas_h-canvas_h/2 + 100);
+        g.strokeLine(200,canvas_h-canvas_h/2 + 100,300, canvas_h-100);
+        g.strokeLine(300,canvas_h-100,350, canvas_h-100);
+        
+        g.strokeLine(350,canvas_h-100,400, canvas_h-canvas_h/2 + 150);
+        g.strokeLine(400,canvas_h-canvas_h/2 + 150,450, canvas_h-canvas_h/2 + 200);
+        
+        g.strokeLine(450,canvas_h-canvas_h/2 + 200,canvas_w-200, canvas_h-canvas_h/2 + 200);
+        g.strokeLine(canvas_w-200,canvas_h-canvas_h/2 + 200,canvas_w, canvas_h-canvas_h/2 + 150);
  
+        
+        // draw and control ship
+        int xmove = 50;
+        int ymove = 5;
+        int x = 50;
+        int y = 250;
+        shipView.setX(x);
+        shipView.setY(y);
+        main.addEventHandler(KeyEvent.KEY_PRESSED, (key) -> {
+            if(key.getCode()==KeyCode.RIGHT) {
+            	shipView.setX(x+xmove);
+            }
+        });
+        
+        
+        
         
         // push in layout
 		topHBox = new HBox();
+		botStackPane = new StackPane();
+		root = new Group(shipView);
 		layoutPlay = new VBox();
+		
         topHBox.getChildren().addAll(minicanvas_left,minicanvas_middle,minicanvas_right);
-        layoutPlay.getChildren().addAll(topHBox,canvas);
+        botStackPane.getChildren().addAll(canvas,root);
+        layoutPlay.getChildren().addAll(topHBox,botStackPane);
+        
+        
+        
+        // pause event
+        main.addEventHandler(KeyEvent.KEY_PRESSED, (key) -> {
+            if(key.getCode()==KeyCode.ESCAPE & layoutStack.get(0) == layoutPlay) {
+                layoutStack.add(layoutPause);
+                layoutStack.remove(0);
+            }
+            else if(key.getCode()==KeyCode.ESCAPE & layoutStack.get(0) == layoutPause) {
+                layoutStack.add(layoutPlay);
+                layoutStack.remove(0);
+            }
+
+        });
+        
+        
 	}
+	
+	private void view_PauseMenu() {
+		pause_label = new Label("PAUSE");
+		pause_label.setFont(font);
+		pause_label.setTextFill(Color.web("#ffd500"));
+		
+		
+		
+		pauseB = new Button("> CONTINUE");
+		pauseB.setMnemonicParsing(true);
+		pauseB.setFont(fontButton);
+		pauseB.setTextFill(Color.web("#b33434"));
+		pauseB.setMaxWidth(300);
+		pauseB.setWrapText(true);
+		pauseB.setPadding(Insets.EMPTY);
+		pauseB.setStyle("-fx-background-color: transparent");
+		pauseB.setOnMouseEntered(e -> pauseB.setTextFill(Color.web("#ff5e5e")));
+		pauseB.setOnMouseExited(e -> pauseB.setTextFill(Color.web("#b33434")));
+		pauseB.setOnAction(new EventHandler<ActionEvent>(){
+            @Override
+            public void handle(ActionEvent event) {
+            	layoutStack.add(layoutPlay);
+                layoutStack.remove(0);
+            }
+        });
+		
+		
+		stopPlayB = new Button("> EXIT");
+		stopPlayB.setMnemonicParsing(true);
+		stopPlayB.setFont(fontButton);
+		stopPlayB.setTextFill(Color.web("#b33434"));
+		stopPlayB.setMaxWidth(300);
+		stopPlayB.setWrapText(true);
+		stopPlayB.setPadding(Insets.EMPTY);
+	    stopPlayB.setStyle("-fx-background-color: transparent");
+	    stopPlayB.setOnMouseEntered(e -> stopPlayB.setTextFill(Color.web("#ff5e5e")));
+	    stopPlayB.setOnMouseExited(e -> stopPlayB.setTextFill(Color.web("#b33434")));
+	    stopPlayB.setOnAction(new EventHandler<ActionEvent>(){
+            @Override
+            public void handle(ActionEvent event) {
+            	layoutStack.add(layoutMain);
+                layoutStack.remove(0);
+            }
+        });
+	    
+	    layoutPause = new VBox(30);
+	    layoutPause.setBackground(background);
+	    layoutPause.setAlignment(Pos.CENTER);
+	    layoutPause.getChildren().addAll(pause_label, stopPlayB,pauseB);
+	}
+	
 	
 	private void view_MainMenu() {
 		planet_label = new Label("PLANET");
@@ -295,8 +418,12 @@ public class GameEngine extends Application{
 	    playB.setWrapText(true);
 	    playB.setPadding(Insets.EMPTY);
 		playB.setStyle("-fx-background-color: transparent");
-		playB.setOnMouseEntered(e -> playB.setTextFill(Color.web("#ff5e5e")));
-		playB.setOnMouseExited(e -> playB.setTextFill(Color.web("#b33434")));
+		playB.setOnMouseEntered(e -> {
+			playB.setTextFill(Color.web("#ff5e5e"));
+		});
+		playB.setOnMouseExited(e -> {
+			playB.setTextFill(Color.web("#b33434"));
+		});
 		playB.setOnAction(new EventHandler<ActionEvent>(){
             @Override
             public void handle(ActionEvent event) {
@@ -329,7 +456,7 @@ public class GameEngine extends Application{
 		
 		
 		
-		highscoresB = new Button("> HIGH SCORES");
+		highscoresB = new Button("> HIGH-SCORES");
 		highscoresB.setMnemonicParsing(true);
 		highscoresB.setFont(fontButton);
 		highscoresB.setTextFill(Color.web("#b33434"));
@@ -392,7 +519,7 @@ public class GameEngine extends Application{
 		cred_label.setFont(font);
 		cred_label.setTextFill(Color.web("#ffd500"));
 		
-		credNames_label = new Label("Gurkan Gur\nUmut Balkan");
+		credNames_label = new Label("> Gurkan Gur\n> Umut Balkan");
 		credNames_label.setFont(fontButton);
 		credNames_label.setTextFill(Color.web("#ffd500"));
 		
@@ -457,7 +584,7 @@ public class GameEngine extends Application{
 	}
 
 	private void view_HighScoresMenu() {
-		high_label = new Label("High Scores");
+		high_label = new Label("HIGH-SCORES");
 		high_label.setFont(font);
 		high_label.setTextFill(Color.web("#ffd500"));
 		
