@@ -125,6 +125,14 @@ public class GameEngine extends Application{
 	}
 	
 	
+	public static void main(String args[]){   
+		
+	    Application.launch(args);    
+	
+	}
+	
+	
+	
 	public void music_play() {
 	    Status status = mediaPlayer.getStatus();
 	    if (status == Status.UNKNOWN || status == Status.HALTED)
