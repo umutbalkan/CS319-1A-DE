@@ -18,8 +18,10 @@ import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
+import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundImage;
 import javafx.scene.layout.BackgroundPosition;
@@ -67,6 +69,11 @@ public class GameEngine extends Application{
 	private StackPane layout;
 	private ObservableList<Node> layoutStack;
 	private Label planet_label;
+	private ImageView b_img;
+
+	private Label play_label;
+
+	private Font fontButton;
 	
 	@Override
 	public void init() throws Exception{
@@ -117,6 +124,7 @@ public class GameEngine extends Application{
 		
 	    try { 
 	        // load a custom font from a specific location
+	    	fontButton = Font.loadFont(new FileInputStream(new File("./assets/visitor.ttf")), 32);
 	        font = Font.loadFont(new FileInputStream(new File("./assets/visitor.ttf")), 56);
 	        font2 = Font.loadFont(new FileInputStream(new File("./assets/visitor.ttf")), 48);
 	        // create a image 
@@ -131,6 +139,12 @@ public class GameEngine extends Application{
   
             // create Background 
             background = new Background(backgroundimage); 
+            
+            FileInputStream input =new FileInputStream("./assets/buttonSprite.png");  
+            Image button_img = new Image(input);  
+            b_img =new ImageView(button_img); 
+            
+            
 	      } catch (FileNotFoundException e) {
 	        e.printStackTrace();
 	      }
@@ -197,9 +211,15 @@ public class GameEngine extends Application{
         planet_label.setFont(font2);
         defender_label.setTextFill(Color.web("#ffd500")); // set color of label
         planet_label.setTextFill(Color.web("#ffd500"));
-		
-		playB = new Button("START");
-		playB.setMaxWidth(100);
+		        
+		playB = new Button("> START");
+		playB.setMnemonicParsing(true);
+		playB.setFont(fontButton);
+		playB.setTextFill(Color.web("#b33434"));
+		playB.setMaxWidth(300);
+	    playB.setWrapText(true);
+	    playB.setPadding(Insets.EMPTY);
+		playB.setStyle("-fx-background-color: transparent");
 		playB.setOnAction(new EventHandler<ActionEvent>(){
             @Override
             public void handle(ActionEvent event) {
@@ -207,20 +227,37 @@ public class GameEngine extends Application{
                 layoutStack.remove(0);
             }
         });
+		 
+
 		
-		settingsB = new Button("Settings");
-		settingsB.setMaxWidth(100);
-		
+		settingsB = new Button("> SETTINGS");
+		settingsB.setMnemonicParsing(true);
+		settingsB.setFont(fontButton);
+		settingsB.setTextFill(Color.web("#b33434"));
+		settingsB.setMaxWidth(300);
+		settingsB.setWrapText(true);
+		settingsB.setPadding(Insets.EMPTY);
+		settingsB.setStyle("-fx-background-color: transparent");
 		settingsB.setOnAction(new EventHandler<ActionEvent>(){
             @Override
             public void handle(ActionEvent event) {
+            	//settingsB.setTextFill(Color.web("#c4bd2b"));
             	layoutStack.add(layoutSettings);
                 layoutStack.remove(0);
             }
         });
 		
-		highscoresB = new Button("High Scores");
-		highscoresB.setMaxWidth(100);
+		
+		
+		
+		highscoresB = new Button("> HIGH SCORES");
+		highscoresB.setMnemonicParsing(true);
+		highscoresB.setFont(fontButton);
+		highscoresB.setTextFill(Color.web("#b33434"));
+		highscoresB.setMaxWidth(300);
+		highscoresB.setWrapText(true);
+		highscoresB.setPadding(Insets.EMPTY);
+		highscoresB.setStyle("-fx-background-color: transparent");
 		highscoresB.setOnAction(new EventHandler<ActionEvent>(){
             @Override
             public void handle(ActionEvent event) {
@@ -229,8 +266,14 @@ public class GameEngine extends Application{
             }
         });
 		
-		creditsB = new Button("Credits");
-		creditsB.setMaxWidth(100);
+		creditsB = new Button("> CREDITS");
+		creditsB.setMnemonicParsing(true);
+		creditsB.setFont(fontButton);
+		creditsB.setTextFill(Color.web("#b33434"));
+		creditsB.setMaxWidth(300);
+		creditsB.setWrapText(true);
+		creditsB.setPadding(Insets.EMPTY);
+		creditsB.setStyle("-fx-background-color: transparent");
 		creditsB.setOnAction(new EventHandler<ActionEvent>(){
             @Override
             public void handle(ActionEvent event) {
@@ -240,8 +283,14 @@ public class GameEngine extends Application{
         });
 		
 		// QUIT HERE
-		quitB = new Button("Quit");
-		quitB.setMaxWidth(100);
+		quitB = new Button("> QUIT");
+		quitB.setMnemonicParsing(true);
+		quitB.setFont(fontButton);
+		quitB.setTextFill(Color.web("#b33434"));
+		quitB.setMaxWidth(300);
+		quitB.setWrapText(true);
+		quitB.setPadding(Insets.EMPTY);
+		quitB.setStyle("-fx-background-color: transparent");
 		quitB.setOnAction(e -> window.close());
 		
 		layoutMain = new VBox(30);
@@ -258,8 +307,14 @@ public class GameEngine extends Application{
 		cred_label.setFont(font);
 		cred_label.setTextFill(Color.web("#ffd500"));
 		
-		backB = new Button("Back");
-		backB.setMaxWidth(100);
+		backB = new Button("> BACK");
+		backB.setMnemonicParsing(true);
+		backB.setFont(fontButton);
+		backB.setTextFill(Color.web("#b33434"));
+		backB.setMaxWidth(300);
+		backB.setWrapText(true);
+		backB.setPadding(Insets.EMPTY);
+		backB.setStyle("-fx-background-color: transparent");
 		backB.setOnAction(new EventHandler<ActionEvent>(){
             @Override
             public void handle(ActionEvent event) {
@@ -279,7 +334,14 @@ public class GameEngine extends Application{
 		sett_label.setFont(font);
 		sett_label.setTextFill(Color.web("#ffd500"));
 		
-		backB1 = new Button("Back");
+		backB1 = new Button("> BACK");
+		backB1.setMnemonicParsing(true);
+		backB1.setFont(fontButton);
+		backB1.setTextFill(Color.web("#b33434"));
+		backB1.setMaxWidth(300);
+		backB1.setWrapText(true);
+		backB1.setPadding(Insets.EMPTY);
+		backB1.setStyle("-fx-background-color: transparent");
 		backB1.setOnAction(new EventHandler<ActionEvent>(){
             @Override
             public void handle(ActionEvent event) {
@@ -299,7 +361,14 @@ public class GameEngine extends Application{
 		high_label.setFont(font);
 		high_label.setTextFill(Color.web("#ffd500"));
 		
-		backB2 = new Button("Back");
+		backB2 = new Button("> BACK");
+		backB2.setMnemonicParsing(true);
+		backB2.setFont(fontButton);
+		backB2.setTextFill(Color.web("#b33434"));
+		backB2.setMaxWidth(300);
+		backB2.setWrapText(true);
+		backB2.setPadding(Insets.EMPTY);
+		backB2.setStyle("-fx-background-color: transparent");
 		backB2.setOnAction(new EventHandler<ActionEvent>(){
             @Override
             public void handle(ActionEvent event) {

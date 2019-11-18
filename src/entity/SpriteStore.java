@@ -1,5 +1,7 @@
 package entity;
-import java.util.HashMap<K,V>;
+
+import java.util.HashMap;
+
 /*
  * Public class of SpriteStore
  * */
@@ -17,6 +19,7 @@ public class SpriteStore {
     }
     
     public Sprite getSprite(String ref){
+		return sprite;
       
     }
     
