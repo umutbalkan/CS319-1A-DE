@@ -6,7 +6,7 @@ import java.io.FileNotFoundException;
 
 import io.HighScoreManager;
 import io.Score;
-
+import javafx.animation.TranslateTransition;
 import javafx.application.Application;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -32,12 +32,14 @@ import javafx.scene.layout.BackgroundRepeat;
 import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import javafx.scene.media.AudioClip;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
@@ -89,11 +91,13 @@ public class GameEngine extends Application{
 
 	private Image ship_img;
 
-	private StackPane botStackPane;
+	private Pane botPane;
 
 	private Group root;
 
 	private ImageView shipView;
+
+	private TranslateTransition translateTransition;
 	
 	@Override
 	public void init() throws Exception{
@@ -305,30 +309,56 @@ public class GameEngine extends Application{
         g.strokeLine(canvas_w-200,canvas_h-canvas_h/2 + 200,canvas_w, canvas_h-canvas_h/2 + 150);
  
         
-        // draw and control ship
-        int xmove = 50;
-        int x = 50;
+        // draw ship
+        int xmove = 20;
+        int x = 100;
         int y = 250;
-        shipView.setX(x);
-        shipView.setY(y);
-        main.addEventHandler(KeyEvent.KEY_PRESSED, (key) -> {
-            if(key.getCode()==KeyCode.RIGHT) {
-            	shipView.setX(x+xmove);
-            }
-        });
-        
-        
-        
+        //shipView.setTranslateX(100);
+        shipView.setTranslateX(x);
+        shipView.setTranslateY(y);
         
         // push in layout
 		topHBox = new HBox();
-		botStackPane = new StackPane();
+		botPane = new Pane();
 		root = new Group(shipView);
 		layoutPlay = new VBox();
 		
         topHBox.getChildren().addAll(minicanvas_left,minicanvas_middle,minicanvas_right);
-        botStackPane.getChildren().addAll(canvas,root);
-        layoutPlay.getChildren().addAll(topHBox,botStackPane);
+        botPane.getChildren().addAll(canvas,root);
+        layoutPlay.getChildren().addAll(topHBox,botPane);
+        
+//        //Creating Translate Transition 
+//        translateTransition = new TranslateTransition(); 
+//        //Setting the duration of the transition  
+//        translateTransition.setDuration(Duration.millis(750));
+//        //Setting the node for the transition 
+//        translateTransition.setNode(shipView);
+//        //Setting auto reverse value to false 
+//        translateTransition.setAutoReverse(true);
+//        
+        
+        // control ship
+        main.addEventHandler(KeyEvent.KEY_PRESSED, (key) -> {
+        	System.out.println(shipView.getTranslateX());
+            if(key.getCode()==KeyCode.RIGHT) {
+            	shipView.setScaleX(1);
+            	shipView.setTranslateX(shipView.getTranslateX()+xmove);
+            }
+            if(key.getCode()==KeyCode.LEFT) {
+            	shipView.setScaleX(-1);
+            	System.out.println("<-");
+            	shipView.setTranslateX(shipView.getTranslateX()-xmove);
+            }
+            if(key.getCode()==KeyCode.UP) {
+            	shipView.setTranslateY(shipView.getTranslateY()-xmove);
+            }
+            if(key.getCode()==KeyCode.DOWN) {
+            	shipView.setTranslateY(shipView.getTranslateY()+xmove);
+            }
+        });
+        
+
+        
         
         
         
