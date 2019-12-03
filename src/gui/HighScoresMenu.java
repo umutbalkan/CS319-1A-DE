@@ -22,14 +22,15 @@ public class HighScoresMenu extends VBox{
 	public boolean backClicked;
 	private Background background;
 	
-	public HighScoresMenu(int spacing, Font font,Font fontButton, BackgroundImage bg) {
+	public HighScoresMenu(int spacing, String sc, Font font,Font fontButton, BackgroundImage bg) {
 		super(spacing);
 		
 		// set labels buttons and background
+		scores = sc;
 		init_label(font,fontButton);
 		init_button(fontButton);
 		background = new Background(bg);
-
+		
 		
 		setBackground(background);
 		setAlignment(Pos.CENTER);
@@ -57,8 +58,6 @@ public class HighScoresMenu extends VBox{
 		high_label.setTextFill(Color.web("#ffd500"));
 		
 		
-		highscoreManager = HighScoreManager.getInstance();
-		scores = highscoreManager.readHighScoreFile();
 		scores_label = new Label(scores);
 		scores_label.setFont(fontButton);
 		scores_label.setTextFill(Color.web("#ffd500"));
