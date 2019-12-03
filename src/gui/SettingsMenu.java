@@ -12,26 +12,27 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 
-public class CreditsMenu extends VBox {
+public class SettingsMenu extends VBox{
+
 	
-	private Label cred_label,credNames_label;
+	private Label sett_label;
 	private Button backB;
 	public boolean backClicked;
 	private Background background;
-	public CreditsMenu(int spacing,Font font, Font fontButton,BackgroundImage bg){
+	
+	public SettingsMenu(int spacing, Font font, Font fontButton, BackgroundImage bg) {
 		super(spacing);
 		
-		// set labels buttons and background
-		init_label(font, fontButton);
+		init_label(font);
 		init_button(fontButton);
-		background = new Background(bg);
-
+		
+		background = new Background(bg);	
 		
 		setBackground(background);
 		setAlignment(Pos.CENTER);
-		getChildren().addAll(cred_label,credNames_label, backB);
+		getChildren().addAll(sett_label, backB);
 	}
-	
+
 	private void init_button(Font fontButton) {
 		backB = new Button("> BACK");
 		backB.setMnemonicParsing(true);
@@ -43,24 +44,13 @@ public class CreditsMenu extends VBox {
 		backB.setStyle("-fx-background-color: transparent");
 		backB.setOnMouseEntered(e -> backB.setTextFill(Color.web("#ff5e5e")));
 		backB.setOnMouseExited(e -> backB.setTextFill(Color.web("#b33434")));
-		backB.setOnAction(new EventHandler<ActionEvent>(){
-            @Override
-            public void handle(ActionEvent event) {
+		backB.setOnAction(e -> backClicked = true);
+		
+	}
 
-            }
-        });
-		
+	private void init_label(Font font) {
+		sett_label = new Label("Settings");
+		sett_label.setFont(font);
+		sett_label.setTextFill(Color.web("#ffd500"));
 	}
-	
-	private void init_label(Font font, Font fontButton) {
-		cred_label = new Label("Credits");
-		cred_label.setFont(font);
-		cred_label.setTextFill(Color.web("#ffd500"));
-		
-		credNames_label = new Label("> Gurkan Gur\n> Umut Balkan");
-		credNames_label.setFont(fontButton);
-		credNames_label.setTextFill(Color.web("#ffd500"));
-		
-	}
-	
 }

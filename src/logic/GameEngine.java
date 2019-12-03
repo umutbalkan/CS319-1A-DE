@@ -1,9 +1,14 @@
 package logic;
 
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
+import gui.CreditsMenu;
+import gui.HighScoresMenu;
+import gui.MainMenu;
+import gui.SettingsMenu;
 import io.HighScoreManager;
 import io.Score;
 import javafx.animation.TranslateTransition;
@@ -61,7 +66,8 @@ public class GameEngine extends Application{
 	private int minicanvas_w_left, minicanvas_w_middle, minicanvas_w_right, minicanvas_h;
 	private Button playB, settingsB, creditsB, highscoresB, quitB,backB, backB1, backB2;
 	private Label defender_label, cred_label, sett_label, high_label;
-	private VBox layoutMain, layoutSettings, layoutCredits, layoutHighscores;
+	private MainMenu layoutMain; 
+	private VBox layoutSettings, layoutCredits, layoutHighscores;
 	private VBox layoutPlay;
 	private HBox topHBox;
 	private Canvas canvas;
@@ -88,7 +94,7 @@ public class GameEngine extends Application{
 	private Button pauseB;
 	private Button stopPlayB;
 	private VBox layoutPause;
-
+	private BackgroundImage backgroundimage;
 	private Image ship_img;
 
 	private Pane botPane;
@@ -107,6 +113,39 @@ public class GameEngine extends Application{
 		IDLE_BUTTON_STYLE = "-fx-text-fill: #b33434;";
 		HOVERED_BUTTON_STYLE = "-fx-text-fill: #ff5e5e;";
 		setPrimitiveAttributes();
+		
+        // load a custom font from a specific location
+    	fontButton = Font.loadFont(new FileInputStream(new File("./assets/visitor.ttf")), 32);
+        font = Font.loadFont(new FileInputStream(new File("./assets/visitor.ttf")), 56);
+        font2 = Font.loadFont(new FileInputStream(new File("./assets/visitor.ttf")), 48);
+        
+        // create a image 
+        FileInputStream img = new FileInputStream("./assets/menuBG.png");
+        Image image = new Image(img); 
+        // create a background image 
+        backgroundimage = new BackgroundImage(image,  
+                                         BackgroundRepeat.NO_REPEAT,  
+                                         BackgroundRepeat.NO_REPEAT,  
+                                         BackgroundPosition.DEFAULT,  
+                                         new BackgroundSize(1.0, 1.0, true, true, false, false)); 
+
+        // create Background 
+        background = new Background(backgroundimage);    
+        
+        // image files
+        FileInputStream litteship_file = new FileInputStream("./assets/littleship.png");
+        littleShip_img = new Image(litteship_file); 
+        
+        FileInputStream bomb_file = new FileInputStream("./assets/bomb.png");
+        bomb_img = new Image(bomb_file); 
+        
+        FileInputStream playBG_file = new FileInputStream("./assets/playBG.png");
+        playBG_img = new Image(playBG_file); 
+        
+        FileInputStream ship_file = new FileInputStream("./assets/ship.png");
+        ship_img = new Image(ship_file);
+        
+        shipView = new ImageView(ship_img);
 		
 	}
 	
@@ -128,9 +167,19 @@ public class GameEngine extends Application{
 		layoutStack = layout.getChildren();
 		
 		
+		main = new Scene(layout, width,height);
 		// Display
 		view();
-		layoutStack.add(layoutMain);
+		
+		layoutMain = new MainMenu(30, font,font2,fontButton,backgroundimage);
+		layoutCredits = new CreditsMenu(30, font, fontButton, backgroundimage);
+		layoutSettings = new SettingsMenu(30,font,fontButton,backgroundimage);
+		layoutHighscores = new HighScoresMenu(30,font,fontButton,backgroundimage);
+		layoutPlay = null;
+		layoutPause = null;
+		layoutStack.add(layoutHighscores);
+		
+		System.out.println(layoutMain.playClicked);
 		window.setScene(main);
 		window.show();
 		music_play(); 
@@ -140,6 +189,7 @@ public class GameEngine extends Application{
 	
 	public void stop() throws Exception{
 		System.out.println("Game - Terminating.");
+		System.out.println(layoutMain.playClicked);
 	}
 	
 	public static void main(String args[]){   
@@ -177,48 +227,8 @@ public class GameEngine extends Application{
 	
 	private void view() {
 		
-	    try { 
-	        // load a custom font from a specific location
-	    	fontButton = Font.loadFont(new FileInputStream(new File("./assets/visitor.ttf")), 32);
-	        font = Font.loadFont(new FileInputStream(new File("./assets/visitor.ttf")), 56);
-	        font2 = Font.loadFont(new FileInputStream(new File("./assets/visitor.ttf")), 48);
-	        // create a image 
-	        FileInputStream img = new FileInputStream("./assets/menuBG.png");
-	        Image image = new Image(img); 
-	        // create a background image 
-            BackgroundImage backgroundimage = new BackgroundImage(image,  
-                                             BackgroundRepeat.NO_REPEAT,  
-                                             BackgroundRepeat.NO_REPEAT,  
-                                             BackgroundPosition.DEFAULT,  
-                                             new BackgroundSize(1.0, 1.0, true, true, false, false)); 
-  
-            // create Background 
-            background = new Background(backgroundimage);    
-            
-            // image files
-            FileInputStream litteship_file = new FileInputStream("./assets/littleship.png");
-            littleShip_img = new Image(litteship_file); 
-            
-            FileInputStream bomb_file = new FileInputStream("./assets/bomb.png");
-            bomb_img = new Image(bomb_file); 
-            
-            FileInputStream playBG_file = new FileInputStream("./assets/playBG.png");
-            playBG_img = new Image(playBG_file); 
-            
-            FileInputStream ship_file = new FileInputStream("./assets/ship.png");
-            ship_img = new Image(ship_file);
-            
-            shipView = new ImageView(ship_img);
-            
-	      } catch (FileNotFoundException e) {
-	        e.printStackTrace();
-	      }
 		
 		view_PauseMenu();
-        view_MainMenu();
-		view_CreditsMenu();
-		view_SettingsMenu();
-		view_HighScoresMenu();
 		view_PlayScreen();
 	}
 	
@@ -426,224 +436,6 @@ public class GameEngine extends Application{
 	    layoutPause.setBackground(background);
 	    layoutPause.setAlignment(Pos.CENTER);
 	    layoutPause.getChildren().addAll(pause_label, stopPlayB,pauseB);
-	}
-	
-	
-	private void view_MainMenu() {
-		planet_label = new Label("PLANET");
-		defender_label = new Label("D E F E N D E R");
-
-		
-        defender_label.setFont(font); // use this font with our label
-        planet_label.setFont(font2);
-        defender_label.setTextFill(Color.web("#ffd500")); // set color of label
-        planet_label.setTextFill(Color.web("#ffd500"));
-		        
-		playB = new Button("> START");
-		playB.setMnemonicParsing(true);
-		playB.setFont(fontButton);
-		playB.setTextFill(Color.web("#b33434"));
-		playB.setMaxWidth(300);
-	    playB.setWrapText(true);
-	    playB.setPadding(Insets.EMPTY);
-		playB.setStyle("-fx-background-color: transparent");
-		playB.setOnMouseEntered(e -> {
-			playB.setTextFill(Color.web("#ff5e5e"));
-		});
-		playB.setOnMouseExited(e -> {
-			playB.setTextFill(Color.web("#b33434"));
-		});
-		playB.setOnAction(new EventHandler<ActionEvent>(){
-            @Override
-            public void handle(ActionEvent event) {
-            	layoutStack.add(layoutPlay);
-                layoutStack.remove(0);
-            }
-        });
-		 
-
-		
-		settingsB = new Button("> SETTINGS");
-		settingsB.setMnemonicParsing(true);
-		settingsB.setFont(fontButton);
-		settingsB.setTextFill(Color.web("#b33434"));
-		settingsB.setMaxWidth(300);
-		settingsB.setWrapText(true);
-		settingsB.setPadding(Insets.EMPTY);
-		settingsB.setStyle("-fx-background-color: transparent");
-		settingsB.setOnMouseEntered(e -> settingsB.setTextFill(Color.web("#ff5e5e")));
-		settingsB.setOnMouseExited(e -> settingsB.setTextFill(Color.web("#b33434")));
-		settingsB.setOnAction(new EventHandler<ActionEvent>(){
-            @Override
-            public void handle(ActionEvent event) {
-            	//settingsB.setTextFill(Color.web("#c4bd2b"));
-            	layoutStack.add(layoutSettings);
-                layoutStack.remove(0);
-            }
-        });
-		
-		
-		
-		
-		highscoresB = new Button("> HIGH-SCORES");
-		highscoresB.setMnemonicParsing(true);
-		highscoresB.setFont(fontButton);
-		highscoresB.setTextFill(Color.web("#b33434"));
-		highscoresB.setMaxWidth(300);
-		highscoresB.setWrapText(true);
-		highscoresB.setPadding(Insets.EMPTY);
-		highscoresB.setStyle("-fx-background-color: transparent");
-		highscoresB.setOnMouseEntered(e -> highscoresB.setTextFill(Color.web("#ff5e5e")));
-		highscoresB.setOnMouseExited(e -> highscoresB.setTextFill(Color.web("#b33434")));
-		highscoresB.setOnAction(new EventHandler<ActionEvent>(){
-            @Override
-            public void handle(ActionEvent event) {
-            	layoutStack.add(layoutHighscores);
-                layoutStack.remove(0);
-            }
-        });
-		
-		creditsB = new Button("> CREDITS");
-		creditsB.setMnemonicParsing(true);
-		creditsB.setFont(fontButton);
-		creditsB.setTextFill(Color.web("#b33434")); //selected color: #ff5e5e
-		creditsB.setMaxWidth(300);
-		creditsB.setWrapText(true);
-		creditsB.setPadding(Insets.EMPTY);
-		creditsB.setStyle("-fx-background-color: transparent");
-		creditsB.setOnMouseEntered(e -> creditsB.setTextFill(Color.web("#ff5e5e")));
-		creditsB.setOnMouseExited(e -> creditsB.setTextFill(Color.web("#b33434")));
-		creditsB.setOnAction(new EventHandler<ActionEvent>(){
-            @Override
-            public void handle(ActionEvent event) {
-            	layoutStack.add(layoutCredits);
-                layoutStack.remove(0);
-            }
-        });
-		
-		// QUIT HERE
-		quitB = new Button("> QUIT");
-		quitB.setMnemonicParsing(true);
-		quitB.setFont(fontButton);
-		quitB.setTextFill(Color.web("#b33434"));
-		quitB.setMaxWidth(300);
-		quitB.setWrapText(true);
-		quitB.setPadding(Insets.EMPTY);
-		quitB.setStyle("-fx-background-color: transparent");
-		quitB.setOnMouseEntered(e -> quitB.setTextFill(Color.web("#ff5e5e")));
-		quitB.setOnMouseExited(e -> quitB.setTextFill(Color.web("#b33434")));
-		quitB.setOnAction(e -> window.close());
-		
-		layoutMain = new VBox(30);
-		layoutMain.setBackground(background);
-		layoutMain.setAlignment(Pos.CENTER);
-		layoutMain.getChildren().addAll(planet_label,defender_label,playB,settingsB,highscoresB,creditsB,quitB);
-
-		main = new Scene(layout, width,height);
-		
-	}
-	
-	private void view_CreditsMenu() {
-		cred_label = new Label("Credits");
-		cred_label.setFont(font);
-		cred_label.setTextFill(Color.web("#ffd500"));
-		
-		credNames_label = new Label("> Gurkan Gur\n> Umut Balkan");
-		credNames_label.setFont(fontButton);
-		credNames_label.setTextFill(Color.web("#ffd500"));
-		
-		backB = new Button("> BACK");
-		backB.setMnemonicParsing(true);
-		backB.setFont(fontButton);
-		backB.setTextFill(Color.web("#b33434"));
-		backB.setMaxWidth(300);
-		backB.setWrapText(true);
-		backB.setPadding(Insets.EMPTY);
-		backB.setStyle("-fx-background-color: transparent");
-		backB.setOnMouseEntered(e -> backB.setTextFill(Color.web("#ff5e5e")));
-		backB.setOnMouseExited(e -> backB.setTextFill(Color.web("#b33434")));
-		backB.setOnAction(new EventHandler<ActionEvent>(){
-            @Override
-            public void handle(ActionEvent event) {
-            	layoutStack.add(layoutMain);
-                layoutStack.remove(0);
-            }
-        });
-		
-		layoutCredits = new VBox(20);
-		layoutCredits.setBackground(background);
-		layoutCredits.setAlignment(Pos.CENTER);
-		layoutCredits.getChildren().addAll(cred_label,credNames_label, backB);
-	}
-	
-	private void view_SettingsMenu() {
-		sett_label = new Label("Settings");
-		sett_label.setFont(font);
-		sett_label.setTextFill(Color.web("#ffd500"));
-		
-		backB1 = new Button("> BACK");
-		backB1.setMnemonicParsing(true);
-		backB1.setFont(fontButton);
-		backB1.setTextFill(Color.web("#b33434"));
-		backB1.setMaxWidth(300);
-		backB1.setWrapText(true);
-		backB1.setPadding(Insets.EMPTY);
-		backB1.setStyle("-fx-background-color: transparent");
-		backB1.setOnMouseEntered(e -> backB1.setTextFill(Color.web("#ff5e5e")));
-		backB1.setOnMouseExited(e -> backB1.setTextFill(Color.web("#b33434")));
-		backB1.setOnAction(new EventHandler<ActionEvent>(){
-            @Override
-            public void handle(ActionEvent event) {
-            	layoutStack.add(layoutMain);
-                layoutStack.remove(0);
-            }
-        });
-		
-		
-//		Slider slider = new Slider();
-//	    slider.setMin(0);
-//	    slider.setMax(1.0);
-//	    slider.setValue(0.5);
-		
-		
-		layoutSettings = new VBox(20);
-		layoutSettings.setBackground(background);
-		layoutSettings.setAlignment(Pos.CENTER);
-		layoutSettings.getChildren().addAll(sett_label, backB1);
-	}
-
-	private void view_HighScoresMenu() {
-		high_label = new Label("HIGH-SCORES");
-		high_label.setFont(font);
-		high_label.setTextFill(Color.web("#ffd500"));
-		
-		scores_label = new Label(scores);
-		scores_label.setFont(fontButton);
-		scores_label.setTextFill(Color.web("#ffd500"));
-		
-		backB2 = new Button("> BACK");
-		backB2.setMnemonicParsing(true);
-		backB2.setFont(fontButton);
-		backB2.setTextFill(Color.web("#b33434"));
-		backB2.setMaxWidth(300);
-		backB2.setWrapText(true);
-		backB2.setPadding(Insets.EMPTY);
-		backB2.setStyle("-fx-background-color: transparent");
-		backB2.setOnMouseEntered(e -> backB2.setTextFill(Color.web("#ff5e5e")));
-		backB2.setOnMouseExited(e -> backB2.setTextFill(Color.web("#b33434")));
-		backB2.setOnAction(new EventHandler<ActionEvent>(){
-            @Override
-            public void handle(ActionEvent event) {
-            	layoutStack.add(layoutMain);
-                layoutStack.remove(0);
-            }
-        });
-		
-		layoutHighscores = new VBox(20);
-		layoutHighscores.setBackground(background);
-		layoutHighscores.setAlignment(Pos.CENTER);
-		layoutHighscores.getChildren().addAll(high_label, scores_label, backB2);
-		
 	}
 	
 }
