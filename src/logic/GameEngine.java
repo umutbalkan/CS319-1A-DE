@@ -83,7 +83,6 @@ public class GameEngine extends Application{
 		window.setTitle("Planet Defender");	
 		main = new Scene(layout, width,height);
 		
-		music_play();
 		//demo();
 		
 		
