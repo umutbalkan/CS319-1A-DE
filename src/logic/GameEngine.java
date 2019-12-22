@@ -33,7 +33,9 @@ import entity.Bullet;
 import entity.GameObject;
 import entity.GiantM;
 import entity.Lander;
+import entity.MotherShip;
 import entity.Ship;
+import entity.Swarmer;
 import io.HighScoreManager;
 
 public class GameEngine{
@@ -53,6 +55,9 @@ public class GameEngine{
 	private LinkedList<Astronaut> astranoutList;
 	private LinkedList<Lander> landerList;
 	private LinkedList<Bullet> enemyBulletList;
+	private LinkedList<Swarmer> swarmerList;
+	private MotherShip pod1;
+	private MotherShip pod2;
 	private GiantM boss1;
 	private Baiter baiter;
 	private int bulletNumber;
@@ -68,6 +73,8 @@ public class GameEngine{
 	private boolean wave4Final;
 	private boolean wave5;
 	private boolean wave5Final;
+	private boolean wave6;
+	private boolean wave6Final;
 	double yo=0;
 	boolean spacePresse = false;
 	private int as1;
@@ -75,7 +82,7 @@ public class GameEngine{
 	private int asTimer;
 	private int a;
 	private int b;
-	private int con = 1;
+	private int con;
 	private int boo;
 	private int baiterNumber;
 	long finishTime;
@@ -105,22 +112,29 @@ public class GameEngine{
 		wave4Final = false;
 		wave5 = false;
 		wave5Final = false;
+		wave6 = false;
+		wave6Final = false;
 		astranoutList = new LinkedList<Astronaut>();
 		landerList = new LinkedList<Lander>();
 		enemyBulletList = new LinkedList<Bullet>();
+		swarmerList = new LinkedList<Swarmer>();
 		boo=1;
 		baiterNumber = 5;
+		con=0;
 	}
 	
 	private void processGame() {
 		if(ship.getNumberOfLives()!=0) {
 		moveShip();
 		fireBullet();
+		
 		initWave1();
 		initWave2();
 		initWave3();
 		initWave4();
 		initWave5();
+		
+		initWave6();
 		}
 		}
 	
@@ -184,6 +198,8 @@ public class GameEngine{
 			}
 		}
 	}
+	
+	
 	private void initWave2() {
 		if(waveNumber == 2) {
 			int ran = astranoutList.size();
@@ -192,9 +208,16 @@ public class GameEngine{
 				astranoutList.remove(0);
 				ran--;
 			}
+			long currentTime = (System.currentTimeMillis()/1000);
+			if(con==0) {
+				finishTime = (System.currentTimeMillis()/1000);
+				con=1;
+			}
+			if(currentTime-finishTime==5) {
 			wave2Set();
 			waveNumber=-1;
 			wave2 = true;
+			}
 		}
 		
 		if(wave2) {
@@ -230,9 +253,16 @@ public class GameEngine{
 				astranoutList.remove(0);
 				ran--;
 			}
+			long currentTime = (System.currentTimeMillis()/1000);
+			if(con==1) {
+				finishTime = (System.currentTimeMillis()/1000);
+				con=0;
+			}
+			if(currentTime-finishTime==5) {
 			wave2Set();
 			waveNumber=-1;
 			wave3 = true;
+			}
 		}
 		
 		if(wave3) {
@@ -268,9 +298,16 @@ public class GameEngine{
 				astranoutList.remove(0);
 				ran--;
 			}
+			long currentTime = (System.currentTimeMillis()/1000);
+			if(con==0) {
+				finishTime = (System.currentTimeMillis()/1000);
+				con=1;
+			}
+			if(currentTime-finishTime==5) {
 			wave2Set();
 			waveNumber=-1;
 			wave4 = true;
+			}
 		}
 		
 		if(wave4) {
@@ -306,9 +343,16 @@ public class GameEngine{
 				astranoutList.remove(0);
 				ran--;
 			}
+			long currentTime = (System.currentTimeMillis()/1000);
+			if(con==1) {
+				finishTime = (System.currentTimeMillis()/1000);
+				con=0;
+			}
+			if(currentTime-finishTime==5) {
 			wave2Set();
 			waveNumber=-1;
 			wave5 = true;
+			}
 		}
 		
 		if(wave5) {
@@ -334,6 +378,31 @@ public class GameEngine{
 			else {
 				processWave1Final();
 			}
+		}
+	}
+
+	private void initWave6() {
+		if(waveNumber == 6) {
+			int ran = astranoutList.size();
+			while(ran>0) {
+				removeGameObject(astranoutList.get(0));
+				astranoutList.remove(0);
+				ran--;
+			}
+			long currentTime = (System.currentTimeMillis()/1000);
+			if(con==0) {
+				finishTime = (System.currentTimeMillis()/1000);
+				con=1;
+			}
+			if(currentTime-finishTime==5) {
+			wave6Set();
+			waveNumber=-1;
+			wave6 = true;
+			}
+		}
+		
+		if(wave6) {
+			processWave6();
 		}
 	}
 	
@@ -429,6 +498,7 @@ public class GameEngine{
 			for(int i=0; i<shipBulletList.size(); i++) {
 			if(collisionManager.isCollide(shipBulletList.get(i), boss1)) {
 				boss1.decreaseLife();
+				
 			}
 			}
 			if(collisionManager.isCollide(boss1, ship)) {
@@ -442,6 +512,8 @@ public class GameEngine{
 			for(int i=0; i<shipBulletList.size(); i++) {
 			if(collisionManager.isCollide(shipBulletList.get(i), baiter)) {
 				baiter.decreaseLife();
+				removeGameObject(shipBulletList.get(i));
+				shipBulletList.remove(i);
 			}
 			}
 			if(collisionManager.isCollide(baiter, ship)) {
@@ -450,6 +522,44 @@ public class GameEngine{
 				ship.setY(40);
 			}
 		}
+		
+		if(pod1 != null) {
+			for(int i=0; i<shipBulletList.size(); i++) {
+				if(collisionManager.isCollide(shipBulletList.get(i), pod1)) {
+					removeGameObject(shipBulletList.get(i));
+					shipBulletList.remove(i);
+					swarmerList.add(pod1.releaseSwarms());
+					gamePane.getChildren().add(swarmerList.get(swarmerList.size()-1).getImageView());
+					pod1.decreaseLife();
+				}
+				
+				
+				}
+		}
+		if(pod2 != null) {
+			for(int i=0; i<shipBulletList.size(); i++) {
+		if(collisionManager.isCollide(shipBulletList.get(i), pod2)) {
+			removeGameObject(shipBulletList.get(i));
+			shipBulletList.remove(i);
+			swarmerList.add(pod2.releaseSwarms());
+			gamePane.getChildren().add(swarmerList.get(swarmerList.size()-1).getImageView());
+			pod2.decreaseLife();
+		}
+			}
+		}
+		
+		for(int i=0; i<shipBulletList.size(); i++) {
+			for(int j=0; j<swarmerList.size(); j++) {
+				if(collisionManager.isCollide(swarmerList.get(j),shipBulletList.get(i)))
+				{
+					removeGameObject(shipBulletList.get(i));
+					shipBulletList.remove(i);
+					swarmerList.get(j).decreaseLife();
+					ship.setScore(ship.getScore()+150);
+				}
+			}
+		}
+		
 	}
 	
 	private void processWave1() {
@@ -548,6 +658,46 @@ public class GameEngine{
 		setLanders(0,300,6);
 		baiter = new Baiter(ship.getX()+500,ship.getY());
 		gamePane.getChildren().add(baiter.getImageView());
+	}
+	
+	private void wave6Set() {
+		
+		pod1 = new MotherShip(ship.getX()+100,ship.getY()+50);
+		pod2 = new MotherShip(ship.getX()+200,ship.getY()+100);
+		gamePane.getChildren().add(pod1.getImageView());
+		gamePane.getChildren().add(pod2.getImageView());
+	}
+	
+	private void processWave6() {
+		checkCollision();
+		for(int i=0; i<swarmerList.size(); i++) {
+		
+			if(ship.getX()>swarmerList.get(i).getX())
+				swarmerList.get(i).setXDirection(1);
+			else
+				swarmerList.get(i).setXDirection(-1);
+			
+			if(ship.getY()< swarmerList.get(i).getY())
+				swarmerList.get(i).setYDirection(-1);
+			else
+				swarmerList.get(i).setYDirection(1);
+			
+			swarmerList.get(i).move(1.5,1.5);
+			
+			
+			if(swarmerList.get(i).getLife()<0) {
+				removeGameObject(swarmerList.get(i));
+				swarmerList.remove(i);
+			}
+		}
+		if(pod1 != null && pod1.getLife()<0) {
+			gamePane.getChildren().remove(pod1.getImageView());
+			pod1 = null;
+		}
+		if(pod2 != null && pod2.getLife()<0) {
+			gamePane.getChildren().remove(pod2.getImageView());
+			pod2 = null;
+		}
 	}
 	
 	private void processWave1Final() {
