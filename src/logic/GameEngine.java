@@ -443,7 +443,7 @@ public class GameEngine{
 			//If an astranout abducted by a lander, and then setted free, it falls
 			if(astranoutList.get(i).getOnLand()==true)
 				astranoutList.get(i).move(0,1);
-			if(astranoutList.get(i).getY()==700) //Fall to much, delete
+			if(astranoutList.get(i).getY()>=700) //Fall to much, delete
 			{
 				removeGameObject(astranoutList.get(i));
 				astranoutList.remove(i);
@@ -462,7 +462,13 @@ public class GameEngine{
 				(ship.getX()-landerList.get(randEnemy).getX())/200,(ship.getY()-landerList.get(randEnemy).getY())/200));
 		gamePane.getChildren().add(enemyBulletList.get(enemyBulletList.size()-1).getImageView());
 		}
+		int randEnemy2 = (int)(Math.random() * mutantList.size()) + 0;
 		
+		if(randomFire == 10 && mutantList.size()!=0) {
+			enemyBulletList.add(new Bullet(mutantList.get(randEnemy2).getX(),mutantList.get(randEnemy2).getY(),
+					(ship.getX()-mutantList.get(randEnemy2).getX())/200,(ship.getY()-mutantList.get(randEnemy2).getY())/200));
+			gamePane.getChildren().add(enemyBulletList.get(enemyBulletList.size()-1).getImageView());
+			}
 		//Move the fires
 		for(int i=0; i<enemyBulletList.size(); i++) {
 		enemyBulletList.get(i).move(1, 1);
@@ -514,6 +520,14 @@ public class GameEngine{
 		//Check the collision of the landers and the ship
 		for(int i=0; i<landerList.size(); i++) {
 			if(collisionManager.isCollide(ship, landerList.get(i))) {
+				ship.decreaseLife();
+				ship.setX(40);
+				ship.setY(40);
+			}
+		}
+		
+		for(int i=0; i<mutantList.size(); i++) {
+			if(collisionManager.isCollide(ship, mutantList.get(i))) {
 				ship.decreaseLife();
 				ship.setX(40);
 				ship.setY(40);
@@ -590,6 +604,19 @@ public class GameEngine{
 			}
 		}
 		
+		for(int i=0; i<shipBulletList.size(); i++) {
+			for(int j=0; j<mutantList.size(); j++) {
+				if(collisionManager.isCollide(mutantList.get(j),shipBulletList.get(i)))
+				{
+					removeGameObject(mutantList.get(j));
+					removeGameObject(shipBulletList.get(i));
+					shipBulletList.remove(i);
+					mutantList.remove(j);
+					ship.setScore(ship.getScore()+150);
+				}
+			}
+		}
+		
 	}
 	
 	private void processWave1() {
@@ -608,7 +635,7 @@ public class GameEngine{
 				astranoutList.get(i).count();
 			}
 			
-			if(astranoutList.get(i).getGrabbes()== true && astranoutList.get(i).getCount()>200) {
+			if(astranoutList.get(i).getGrabbes()== true && astranoutList.get(i).getCount()>1000) {
 				astranoutList.get(i).setGrabbed(false);
 				gamePane.getChildren().remove(astranoutList.get(i).getImageView());
 				mutantList.add(new Mutant(astranoutList.get(i).getX(),astranoutList.get(i).getY()));
