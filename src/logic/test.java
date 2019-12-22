@@ -1,31 +1,29 @@
 package logic;
+	
+import java.io.File;
 
+import logic.GameEngine;
 import javafx.application.Application;
 import javafx.stage.Stage;
-import javafx.animation.TranslateTransition; 
-public class test extends Application{
+import javafx.scene.Scene;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 
-	//private GameEngine game;
-	
-	public void init() throws Exception {
-		//System.out.println("Master initialization.");
-		//game.init();
-	}
-	
-	public void stop() throws Exception{
-		//System.out.println("Master terminating.");
-	}
-	
-	public void start(Stage primaryStage) throws Exception {
-		//game = GameEngine.getInstance();
-		//game.start(primaryStage);
-		
-	}
-	
-	public static void main(String args[]){   
-		
-	    Application.launch(GameEngine.class,args);    
-	
-	}
 
+public class test extends Application {
+	@Override
+	public void start(Stage primaryStage) {
+		try {
+			GameEngine manager = new GameEngine();
+			primaryStage = manager.getStage();
+			primaryStage.show();
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static void main(String[] args) {
+		launch(args);
+	}
 }

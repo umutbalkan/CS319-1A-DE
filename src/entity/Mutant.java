@@ -1,4 +1,7 @@
 package entity;
+
+import java.io.FileInputStream;
+
 /*
  * Public class of Mutant
  * This class represents the Mutant object.
@@ -8,8 +11,8 @@ public class Mutant extends Enemy{
 
 
   //Constructor
-  public Mutant(){
-    super();
+  public Mutant(double x, double y){
+    super(x,y);
   }
 
   /*

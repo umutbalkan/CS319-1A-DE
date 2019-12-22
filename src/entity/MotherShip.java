@@ -1,4 +1,7 @@
 package entity;
+
+import java.io.FileInputStream;
+
 /*
  * Public class of MotherShip
  * Extends Enemy class
@@ -7,8 +10,8 @@ public class MotherShip extends Enemy{
 
 
   //Constructor
-  public MotherShip(){
-    super();
+  public MotherShip(double x, double y){
+    super(x,y);
   }
   
   /*

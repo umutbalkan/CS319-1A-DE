@@ -1,6 +1,5 @@
 package logic;
 
-import io.HighScoreManager;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
@@ -36,7 +35,7 @@ public class InputManager {
 				else if(arg0.getCode() == KeyCode.DOWN) {
 					isDownKeyPressed=true;
 				}
-				else if(arg0.getCode() == KeyCode.E) {
+				else if(arg0.getCode() == KeyCode.SHIFT) {
 					isBoostKeyPressed=true;
 				}
 				else if(arg0.getCode() == KeyCode.W) {
@@ -47,6 +46,7 @@ public class InputManager {
 				}
 				else if(arg0.getCode() == KeyCode.SPACE) {
 					isBulletPressed=true;
+					System.out.println("spacepressed");
 				}
 			}
 			
@@ -68,7 +68,7 @@ public class InputManager {
 				else if(arg0.getCode() == KeyCode.DOWN) {
 					isDownKeyPressed=false;
 				}
-				else if(arg0.getCode() == KeyCode.E) {
+				else if(arg0.getCode() == KeyCode.SHIFT) {
 					isBoostKeyPressed=false;
 				}
 				else if(arg0.getCode() == KeyCode.W) {
@@ -79,6 +79,7 @@ public class InputManager {
 				}
 				else if(arg0.getCode() == KeyCode.SPACE) {
 					isBulletPressed=false;
+					System.out.println("spacereleased");
 				}
 			}
 			

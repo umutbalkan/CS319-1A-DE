@@ -1,4 +1,7 @@
 package entity;
+
+import java.io.FileInputStream;
+
 /*
  * Public class of Enemy object
  * Extends GameObject
@@ -8,8 +11,8 @@ public class Enemy extends GameObject{
   private int points;
 
   //Constructor
-  public Enemy(){
-    super();
+  public Enemy(double x, double y){
+    super(x,y);
   
   }
 

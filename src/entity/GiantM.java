@@ -6,21 +6,15 @@ import java.io.FileNotFoundException;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
-/*
- * Public class of Baiter
- * Extends Enemy
- * */
-public class Baiter extends Enemy{
+public class GiantM extends Enemy{
 
-
-  //Constructore
-  public Baiter(double x, double y){
-	  	super(x, y);
+	public GiantM(double x, double y) {
+		super(x, y);
 		// TODO Auto-generated constructor stub
 		
 		url = null;
 		try {
-			url = new FileInputStream("./assets/baiter.png");
+			url = new FileInputStream("./assets/boss.png");
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -28,31 +22,27 @@ public class Baiter extends Enemy{
 		imageView = new ImageView(new Image(url));
 		imageView.setLayoutX(x);
 		imageView.setLayoutY(y);
-		rect.setWidth(45);
-		rect.setHeight(17);
+		rect.setWidth(239);
+		rect.setHeight(224);
 		xSpeed = 2;
 		ySpeed = 2;
 		xDirection = 1;
 		yDirection = 1;
-		numberOfLives = 15;
-  }
-  
-  /*
- * Public method of follow
- * @param Ship ship
- * */
-  
-  public void move(double d, double e) {
+		numberOfLives = 150;
+	}
+	
+	public void move(int x, int y) {
 		
-	  	
-	  	xCoordinate = xCoordinate + xDirection*d*xSpeed;
-		yCoordinate = yCoordinate + yDirection*e*ySpeed;
-		
-		rect.setX(xCoordinate);
-		rect.setY(yCoordinate);
-		imageView.setLayoutX(xCoordinate);
-		imageView.setLayoutY(yCoordinate);
-}
+		  	
+		  	xCoordinate = xCoordinate + xDirection*x*xSpeed;
+			yCoordinate = yCoordinate + yDirection*y*ySpeed;
+			
+			rect.setX(xCoordinate);
+			rect.setY(yCoordinate);
+			imageView.setLayoutX(xCoordinate);
+			imageView.setLayoutY(yCoordinate);
+	}
+	
 	public void setXDirection(double x){
 		xDirection = x;
 	}
@@ -60,7 +50,7 @@ public class Baiter extends Enemy{
 	public void setYDirection(double y) {
 		yDirection = y;
 	}
-  
+
 	public void decreaseLife() {
 		numberOfLives = numberOfLives-1;
 	}
@@ -68,9 +58,4 @@ public class Baiter extends Enemy{
 	public int getLife() {
 		return numberOfLives;
 	}
-	
-  public void follow(Ship ship){
-	  
-  }
-  
 }

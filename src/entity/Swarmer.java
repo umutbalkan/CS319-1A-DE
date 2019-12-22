@@ -1,4 +1,7 @@
 package entity;
+
+import java.io.FileInputStream;
+
 /*
  * Public class of Swarmer
  * This class represents the enemy type "Swarmer". 
@@ -8,8 +11,8 @@ public class Swarmer extends Enemy{
 
 
   //Constructor
-  public Swarmer(){
-    super();
+  public Swarmer(double x, double y){
+    super(x,y);
   }
   
   /*
