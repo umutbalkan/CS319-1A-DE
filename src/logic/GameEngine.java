@@ -36,11 +36,24 @@ import entity.Lander;
 import entity.MotherShip;
 import entity.Ship;
 import entity.Swarmer;
+import gui.CreditsMenu;
+import gui.HighScoresMenu;
+import gui.LayoutManager;
+import gui.MainMenu;
 import io.HighScoreManager;
 
-public class GameEngine{
+public class GameEngine extends Application{
 	
-	
+	private LayoutManager layout;
+	private MainMenu mainmenu;
+	private HighScoresMenu highscoremenu;
+	private CreditsMenu creditsmenu;
+	private Scene main;
+	private Stage window;
+	private int width;
+	private int height;
+	private MediaPlayer mediaPlayer;
+	private ImageView shipView;	
 	private HighScoreManager highscoreManager;
 	private InputManager inputManager;
 	private CollisionManager collisionManager;
@@ -86,10 +99,6 @@ public class GameEngine{
 	private int boo;
 	private int baiterNumber;
 	long finishTime;
-	public GameEngine() {
-		
-		start();
-	}
 	
 	private void initGameObject() {
 		ship = new Ship(40,40);
@@ -125,17 +134,17 @@ public class GameEngine{
 	
 	private void processGame() {
 		if(ship.getNumberOfLives()!=0) {
-		moveShip();
-		fireBullet();
-		
-		initWave1();
-		initWave2();
-		initWave3();
-		initWave4();
-		initWave5();
-		
-		initWave6();
-		}
+			moveShip();
+			fireBullet();
+			
+			initWave1();
+			initWave2();
+			initWave3();
+			initWave4();
+			initWave5();
+			
+			initWave6();
+			}
 		}
 	
 
@@ -426,7 +435,8 @@ public class GameEngine{
 		for(int i=0; i<astranoutList.size(); i++) {
 			if(astranoutList.get(i).getOnLand()==true)
 				astranoutList.get(i).move(0,1);
-			if(astranoutList.get(i).getY()==700)
+			
+			if(astranoutList.get(i).getY() >= 700)
 			{
 				removeGameObject(astranoutList.get(i));
 				astranoutList.remove(i);
@@ -735,10 +745,75 @@ public class GameEngine{
 		}
 	}
 	
-	private void start() {
-		gamePane = new AnchorPane();
-		gameScene = new Scene(gamePane, 600, 800);
-		gameStage = new Stage();
+	
+	private void gameLoop() {
+		timer = new AnimationTimer() {
+
+			@Override
+			public void handle(long arg0) {
+				if(layout.getChildren().get(0) == gamePane) {
+					processGame();
+				}
+				
+				if(mainmenu.isPlayClicked()) {
+					mainmenu.setPlayClicked(false);
+					layout.getChildren().remove(0);
+					layout.getChildren().add(gamePane);
+				}
+				if(mainmenu.isHighScoresClicked()) {
+					mainmenu.setHighScoresClicked(false);
+					layout.getChildren().remove(0);
+					layout.getChildren().add(highscoremenu);	
+				}
+				if(mainmenu.isCreditsClicked()) {
+					mainmenu.setCreditsClicked(false);
+					layout.getChildren().remove(0);
+					layout.getChildren().add(creditsmenu);	
+				}
+				
+				
+				if(layout.getChildren().get(0) == highscoremenu) {
+					if(highscoremenu.isBackClicked()) {
+						highscoremenu.setBackClicked(false);
+						layout.getChildren().remove(0);
+						layout.getChildren().add(mainmenu);
+					}
+				}
+				if(layout.getChildren().get(0) == creditsmenu) {
+					if(creditsmenu.isBackClicked()) {
+						creditsmenu.setBackClicked(false);
+						layout.getChildren().remove(0);
+						layout.getChildren().add(mainmenu);
+					}
+				}
+			}
+			
+		};
+		
+		timer.start();
+	}
+	
+	public void removeGameObject(GameObject obj) {
+		gamePane.getChildren().remove(obj.getImageView());
+		obj.setNull();
+	}
+	
+	public Stage getStage() {
+		return gameStage;
+	}
+
+	@Override
+	public void start(Stage primaryStage) throws Exception {
+		
+		
+		layout = LayoutManager.getInstance();
+		mainmenu = layout.getLayoutMain();
+		highscoremenu = layout.getLayoutHighScores();
+		creditsmenu = layout.getLayoutCredits();
+		gamePane = new AnchorPane();	
+		
+		gameScene = new Scene(layout, 1280, 800);
+		gameStage = primaryStage;
 		gameStage.setScene(gameScene);
 		
 		
@@ -758,27 +833,11 @@ public class GameEngine{
 		gameStage.show();
 	}
 	
-	private void gameLoop() {
-		timer = new AnimationTimer() {
-
-			@Override
-			public void handle(long arg0) {
-				processGame();
-			}
-			
-		};
+	
+	public static void main(String args[]){   
 		
-		timer.start();
-	}
+	    Application.launch(args);    
 	
-	public void removeGameObject(GameObject obj) {
-		gamePane.getChildren().remove(obj.getImageView());
-		obj.setNull();
 	}
-	
-	public Stage getStage() {
-		return gameStage;
-	}
-	
 	
 }

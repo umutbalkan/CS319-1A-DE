@@ -18,7 +18,6 @@ public class HighScoresMenu extends VBox{
 	private Label high_label, scores_label;
 	private Button backB2;
 	private String scores;
-	private HighScoreManager highscoreManager;
 	public boolean backClicked;
 	private Background background;
 	
@@ -52,6 +51,14 @@ public class HighScoresMenu extends VBox{
 		
 	}
 
+	public boolean isBackClicked() {
+		return backClicked;
+	}
+	
+	public void setBackClicked(boolean b) {
+		backClicked = b;
+	}
+	
 	private void init_label(Font font, Font fontButton) {
 		high_label = new Label("HIGH-SCORES");
 		high_label.setFont(font);

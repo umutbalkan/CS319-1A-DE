@@ -18,6 +18,7 @@ public class MainMenu extends VBox {
 	
 	private Label planet_label,defender_label;
 	private Button playB, settingsB, highscoresB,creditsB,quitB;
+	public  boolean playPressed;
 	private Background background;
 	
 	public MainMenu(int spacing, Font font,Font font2, Font fontButton, BackgroundImage bg) {
@@ -44,7 +45,13 @@ public class MainMenu extends VBox {
 		playB.setStyle("-fx-background-color: transparent");
 		playB.setOnMouseEntered(e -> playB.setTextFill(Color.web("#ff5e5e")));
 		playB.setOnMouseExited(e -> playB.setTextFill(Color.web("#b33434")));
-		playB.setOnAction(e -> playClicked = true);
+		playB.setOnAction(new EventHandler<ActionEvent>() {
+		    @Override
+		    public void handle(ActionEvent event) {
+		    	playClicked = true;
+		        System.out.println(playClicked);
+		    }
+		});
 		
 		settingsB = new Button("> SETTINGS");
 		settingsB.setFont(fontButton);
@@ -66,7 +73,13 @@ public class MainMenu extends VBox {
 		highscoresB.setStyle("-fx-background-color: transparent");
 		highscoresB.setOnMouseEntered(e -> highscoresB.setTextFill(Color.web("#ff5e5e")));
 		highscoresB.setOnMouseExited(e -> highscoresB.setTextFill(Color.web("#b33434")));
-		highscoresB.setOnAction(e -> highscoresClicked = true);
+		highscoresB.setOnAction(new EventHandler<ActionEvent>() {
+		    @Override
+		    public void handle(ActionEvent event) {
+		    	highscoresClicked = true;
+		        System.out.println(highscoresClicked);
+		    }
+		});
 		
 		creditsB = new Button("> CREDITS");
 		creditsB.setFont(fontButton);
@@ -90,6 +103,31 @@ public class MainMenu extends VBox {
 		quitB.setOnMouseExited(e -> quitB.setTextFill(Color.web("#b33434")));
 		quitB.setOnAction(e -> quitClicked = true);
 		
+	}
+	
+	public boolean isCreditsClicked() {
+		return creditsClicked;
+	}
+	
+	public void setCreditsClicked(boolean b) {
+		creditsClicked = b;
+	}
+	
+	
+	public boolean isHighScoresClicked() {
+		return highscoresClicked;
+	}
+	
+	public void setHighScoresClicked(boolean b) {
+		highscoresClicked = b;
+	}
+	
+	public boolean isPlayClicked() {
+		return playClicked;
+	}
+	
+	public void setPlayClicked(boolean b) {
+		playClicked = b;
 	}
 
 	private void init_labels(Font font, Font font2) {

@@ -14,6 +14,7 @@ import javafx.scene.layout.BackgroundImage;
 import javafx.scene.layout.BackgroundPosition;
 import javafx.scene.layout.BackgroundRepeat;
 import javafx.scene.layout.BackgroundSize;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
@@ -60,6 +61,11 @@ public class LayoutManager extends StackPane{
 		// init menus and add main menu to visible screen
 		init_layouts();
 		layoutStack.add(layoutMain);
+		//layoutStack.remove(0);
+	}
+	
+	public void changeLayout(Pane lay) {
+		
 	}
 	
 	public static LayoutManager getInstance() {
@@ -85,6 +91,26 @@ public class LayoutManager extends StackPane{
 		layoutPlay = new PlayScreen(width, height,littleShip_img, bomb_img, playBG_img,shipView);
 		layoutPause = new PauseMenu(30,font,fontButton,backgroundimage);
 		
+	}
+	
+	public SettingsMenu getLayoutSettings() {
+		return layoutSettings;
+	}
+	
+	public PauseMenu getLayoutPause() {
+		return layoutPause;
+	}
+	
+	public MainMenu getLayoutMain() {
+		return layoutMain;
+	}
+	
+	public HighScoresMenu getLayoutHighScores() {
+		return layoutHighscores;
+	}
+	
+	public CreditsMenu getLayoutCredits() {
+		return layoutCredits;
 	}
 
 	private void init_widgets() throws Exception{

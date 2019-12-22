@@ -43,13 +43,15 @@ public class CreditsMenu extends VBox {
 		backB.setStyle("-fx-background-color: transparent");
 		backB.setOnMouseEntered(e -> backB.setTextFill(Color.web("#ff5e5e")));
 		backB.setOnMouseExited(e -> backB.setTextFill(Color.web("#b33434")));
-		backB.setOnAction(new EventHandler<ActionEvent>(){
-            @Override
-            public void handle(ActionEvent event) {
-
-            }
-        });
+		backB.setOnAction(e -> backClicked = true);
 		
+	}
+	public boolean isBackClicked() {
+		return backClicked;
+	}
+	
+	public void setBackClicked(boolean b) {
+		backClicked = b;
 	}
 	
 	private void init_label(Font font, Font fontButton) {
