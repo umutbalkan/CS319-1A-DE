@@ -14,6 +14,8 @@ public class Astronaut extends GameObject{
   //Variables
   private boolean onLand;
   private boolean isGrabbedByLander;
+  private int count;
+  private Lander myLander;
   //Constructor
   public Astronaut(double x, double y){
     super(x,y);
@@ -33,13 +35,21 @@ public class Astronaut extends GameObject{
 	ySpeed = 3;
 	onLand=false;
 	isGrabbedByLander = false;
+	count = 0;
   }
   
   /*
  * Public method of getMutated
  * */
   public void getMutated(){
-    
+  }
+  
+  public void setLander(Lander lander) {
+	  myLander = lander;
+  }
+  
+  public Lander getLander() {
+	  return myLander;
   }
   
   public void setGrabbed(boolean con) {
@@ -52,6 +62,14 @@ public class Astronaut extends GameObject{
 
   public void setFree() {
 	  onLand=true;
+  }
+  
+  public void count() {
+	  count = count + 1;
+  }
+  
+  public int getCount() {
+	  return count;
   }
   
   public boolean getOnLand() {

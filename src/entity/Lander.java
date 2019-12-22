@@ -58,6 +58,7 @@ public class Lander extends Enemy{
   public void abductAstronaut(Astronaut astronaut){
 	  hasAstronaut = true;
 	  takenAstronaut = astronaut;
+	  astronaut.setGrabbed(true);
   }
   
   /*
@@ -97,5 +98,9 @@ public class Lander extends Enemy{
   
   public boolean getHasAstronaut() {
 	  return hasAstronaut;
+  }
+  
+  public void setHasAstronaut(boolean ast) {
+	  hasAstronaut = ast;
   }
 }
