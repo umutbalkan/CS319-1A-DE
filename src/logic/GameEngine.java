@@ -41,6 +41,8 @@ import gui.CreditsMenu;
 import gui.HighScoresMenu;
 import gui.LayoutManager;
 import gui.MainMenu;
+import gui.PauseMenu;
+import gui.SettingsMenu;
 import io.HighScoreManager;
 
 public class GameEngine extends Application{
@@ -101,6 +103,8 @@ public class GameEngine extends Application{
 	private int boo;
 	private int baiterNumber;
 	long finishTime;
+	private SettingsMenu settingsmenu;
+	private PauseMenu pausemenu;
 
 	private void initGameObject() {
 		//Create lists, ship, wave conditions
@@ -140,21 +144,21 @@ public class GameEngine extends Application{
 	private void processGame() {
 		//Process method of the game
 		if(ship.getNumberOfLives()!=0) {
-		//MoveShip and FireBullet runs in every wave
-		moveShip();
-		fireBullet();
-
-		//Start first wave
-		initWave1();
-		//Start second wave
-		initWave2();
-		initWave3();  //To start from a wave, set waveNumber to its wave, and make comment the upper init methods
-		initWave4();
-		initWave5();
-
-		initWave6();
+			//MoveShip and FireBullet runs in every wave
+			moveShip();
+			fireBullet();
+	
+			//Start first wave
+			initWave1();
+			//Start second wave
+			initWave2();
+			initWave3();  //To start from a wave, set waveNumber to its wave, and make comment the upper init methods
+			initWave4();
+			initWave5();
+	
+			initWave6();
 		}
-		}
+	}
 
 
 	private void fireBullet() {
@@ -832,10 +836,18 @@ public class GameEngine extends Application{
 
 			@Override
 			public void handle(long arg0) {
+				
+				// play screen
 				if(layout.getChildren().get(0) == gamePane) {
+					if(inputManager.getEsc()) {
+						layout.getChildren().remove(0);
+						layout.getChildren().add(pausemenu);
+					}
 					processGame();
 				}
+				
 
+				// main menu navigation
 				if(mainmenu.isPlayClicked()) {
 					mainmenu.setPlayClicked(false);
 					layout.getChildren().remove(0);
@@ -851,8 +863,40 @@ public class GameEngine extends Application{
 					layout.getChildren().remove(0);
 					layout.getChildren().add(creditsmenu);
 				}
+				if(mainmenu.isQuitClicked()) {
+					gameStage.close();
+				}
 
-
+				if(mainmenu.isSettingsClicked()) {
+					mainmenu.setSettingsClicked(false);
+					layout.getChildren().remove(0);
+					layout.getChildren().add(settingsmenu);
+				}
+				
+				// sub-menus navigation
+				if(layout.getChildren().get(0) == pausemenu) {
+					if(pausemenu.isExitClicked()) {
+						pausemenu.setExitClicked(false);
+						layout.getChildren().remove(0);
+						layout.getChildren().add(mainmenu);
+						ship.setNumberOfLives(0);
+					}
+					if(pausemenu.isBackClicked()) {
+						pausemenu.setBackClicked(false);
+						layout.getChildren().remove(0);
+						layout.getChildren().add(gamePane);
+					}
+				}
+				
+				
+				if(layout.getChildren().get(0) == settingsmenu) {
+					if(settingsmenu.isBackClicked()) {
+						settingsmenu.setBackClicked(false);
+						layout.getChildren().remove(0);
+						layout.getChildren().add(mainmenu);
+					}
+				}
+				
 				if(layout.getChildren().get(0) == highscoremenu) {
 					if(highscoremenu.isBackClicked()) {
 						highscoremenu.setBackClicked(false);
@@ -883,15 +927,18 @@ public class GameEngine extends Application{
 		return gameStage;
 	}
 
-	@Override
-	public void start(Stage primaryStage) throws Exception {
-
-
+	public void init() throws Exception{
 		layout = LayoutManager.getInstance();
 		mainmenu = layout.getLayoutMain();
+		settingsmenu = layout.getLayoutSettings();
 		highscoremenu = layout.getLayoutHighScores();
 		creditsmenu = layout.getLayoutCredits();
+		pausemenu = layout.getLayoutPause();
 		gamePane = new AnchorPane();
+	}
+	
+	@Override
+	public void start(Stage primaryStage) throws Exception {
 
 		gameScene = new Scene(layout, 1280, 800);
 		gameStage = primaryStage;
@@ -902,7 +949,6 @@ public class GameEngine extends Application{
 		try {
 			backgroundUrl = new FileInputStream("./assets/playBG.png");
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		BackgroundImage image = new BackgroundImage(new Image(backgroundUrl), BackgroundRepeat.REPEAT, BackgroundRepeat.REPEAT, BackgroundPosition.DEFAULT, null);

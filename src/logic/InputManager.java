@@ -18,11 +18,15 @@ public class InputManager {
 	private boolean isHyperJumpPressed;
 	private boolean isBulletPressed;
 	private boolean isBombPressed;
+	private boolean isEscPressed;
 	public InputManager(Scene gameScene) {
 		gameScene.setOnKeyPressed(new EventHandler<KeyEvent>(){
 
 			@Override
 			public void handle(KeyEvent arg0) {
+				if(arg0.getCode() == KeyCode.ESCAPE) {
+					isEscPressed=true;
+				}
 				if(arg0.getCode() == KeyCode.LEFT) {
 					isLeftKeyPressed=true;
 				}
@@ -56,6 +60,9 @@ public class InputManager {
 
 			@Override
 			public void handle(KeyEvent arg0) {
+				if(arg0.getCode() == KeyCode.ESCAPE) {
+					isEscPressed=false;
+				}
 				if(arg0.getCode() == KeyCode.LEFT) {
 					isLeftKeyPressed=false;
 				}
@@ -92,6 +99,11 @@ public class InputManager {
   
         return instance; 
     }
+	
+	
+	public boolean getEsc() {
+		return isEscPressed;
+	}
 	
 	public boolean getLeft() {
 		return isLeftKeyPressed;

@@ -17,8 +17,10 @@ public class SettingsMenu extends VBox{
 	
 	private Label sett_label;
 	private Button backB;
-	public boolean backClicked;
+	public boolean backClicked, soundClicked;
 	private Background background;
+	private Button onB;
+	private Button offB;
 	
 	public SettingsMenu(int spacing, Font font, Font fontButton, BackgroundImage bg) {
 		super(spacing);
@@ -30,7 +32,7 @@ public class SettingsMenu extends VBox{
 		
 		setBackground(background);
 		setAlignment(Pos.CENTER);
-		getChildren().addAll(sett_label, backB);
+		getChildren().addAll(sett_label, onB,backB);
 	}
 
 	private void init_button(Font fontButton) {
@@ -46,6 +48,39 @@ public class SettingsMenu extends VBox{
 		backB.setOnMouseExited(e -> backB.setTextFill(Color.web("#b33434")));
 		backB.setOnAction(e -> backClicked = true);
 		
+		onB = new Button("> Sound On");
+		onB.setMnemonicParsing(true);
+		onB.setFont(fontButton);
+		onB.setTextFill(Color.web("#b33434"));
+		onB.setMaxWidth(300);
+		onB.setWrapText(true);
+		onB.setPadding(Insets.EMPTY);
+		onB.setStyle("-fx-background-color: transparent");
+		onB.setOnMouseEntered(e -> onB.setTextFill(Color.web("#ff5e5e")));
+		onB.setOnMouseExited(e -> onB.setTextFill(Color.web("#b33434")));
+		onB.setOnAction(new EventHandler<ActionEvent>() {
+		    @Override
+		    public void handle(ActionEvent event) {
+		    	if(soundClicked) {
+		    		onB.setText("> Sound On");
+		    		soundClicked = false;
+		    	}
+		    	else {
+		    		soundClicked = true;
+			        onB.setText("> Sound Off");
+		    	}
+		    }
+		});
+		
+		
+	}
+	
+	public boolean isBackClicked() {
+		return backClicked;
+	}
+	
+	public void setBackClicked(boolean b) {
+		backClicked = b;
 	}
 
 	private void init_label(Font font) {

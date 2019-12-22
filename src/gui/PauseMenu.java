@@ -16,6 +16,7 @@ public class PauseMenu extends VBox{
 	
 	private Label pause_label;
 	private Button pauseB, stopPlayB;
+	private boolean pauseClicked, exitClicked;
 	private Background background;
 	public PauseMenu(int spacing, Font font, Font fontButton, BackgroundImage bg) {
 		super(spacing);
@@ -37,7 +38,7 @@ public class PauseMenu extends VBox{
 		pauseB.setStyle("-fx-background-color: transparent");
 		pauseB.setOnMouseEntered(e -> pauseB.setTextFill(Color.web("#ff5e5e")));
 		pauseB.setOnMouseExited(e -> pauseB.setTextFill(Color.web("#b33434")));
-		pauseB.setOnAction(null);
+		pauseB.setOnAction(e -> pauseClicked = true);
 		
 		
 		stopPlayB = new Button("> EXIT");
@@ -50,11 +51,28 @@ public class PauseMenu extends VBox{
 	    stopPlayB.setStyle("-fx-background-color: transparent");
 	    stopPlayB.setOnMouseEntered(e -> stopPlayB.setTextFill(Color.web("#ff5e5e")));
 	    stopPlayB.setOnMouseExited(e -> stopPlayB.setTextFill(Color.web("#b33434")));
-	    stopPlayB.setOnAction(null);
+	    stopPlayB.setOnAction(e -> exitClicked = true);
 	    
 	    setBackground(background);
 	    setAlignment(Pos.CENTER);
 	    getChildren().addAll(pause_label, stopPlayB,pauseB);
 	}
 
+	
+	public boolean isBackClicked() {
+		return pauseClicked;
+	}
+	
+	public void setBackClicked(boolean b) {
+		pauseClicked = b;
+	}
+	
+	public boolean isExitClicked() {
+		return exitClicked;
+	}
+	
+	public void setExitClicked(boolean b) {
+		exitClicked = b;
+	}
+	
 }

@@ -105,6 +105,23 @@ public class MainMenu extends VBox {
 		
 	}
 	
+	public boolean isSettingsClicked() {
+		return settingsClicked;
+	}
+	
+	public void setSettingsClicked(boolean b) {
+		settingsClicked = b;
+	}
+	
+	public boolean isQuitClicked() {
+		return quitClicked;
+	}
+	
+	public void setQuitClicked(boolean b) {
+		quitClicked = b;
+	}
+	
+	
 	public boolean isCreditsClicked() {
 		return creditsClicked;
 	}

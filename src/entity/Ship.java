@@ -85,6 +85,10 @@ public class Ship extends GameObject{
   public int getNumberOfLives() {
 	  return numberOfLives;
   }
+  
+  public void setNumberOfLives(int n) {
+	  numberOfLives = n;
+  }
 
   public void decreaseLife() {
 	  numberOfLives = numberOfLives - 1;
