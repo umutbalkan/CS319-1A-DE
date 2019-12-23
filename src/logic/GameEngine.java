@@ -27,6 +27,7 @@ import javafx.scene.layout.BackgroundRepeat;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
+import sound.SoundManager;
 import entity.Astronaut;
 import entity.Baiter;
 import entity.Bullet;
@@ -60,12 +61,13 @@ public class GameEngine extends Application{
 	private HighScoreManager highscoreManager;
 	private InputManager inputManager;
 	private CollisionManager collisionManager;
-
+	private SoundManager soundManager;
 	private AnchorPane gamePane;
 	private Scene gameScene;
 	private Stage gameStage;
 	private AnimationTimer timer;
-
+	private boolean deleteBomb;
+	private int bombCount;
 	private Ship ship;
 	private LinkedList<Bullet> shipBulletList;
 	private LinkedList<Astronaut> astranoutList;
@@ -73,12 +75,19 @@ public class GameEngine extends Application{
 	private LinkedList<Bullet> enemyBulletList;
 	private LinkedList<Swarmer> swarmerList;
 	private LinkedList<Mutant> mutantList;
+	private Bullet bomb1;
+	private Bullet bomb2;
+	private Bullet bomb3;
 	private MotherShip pod1;
 	private MotherShip pod2;
 	private GiantM boss1;
 	private Baiter baiter;
 	private int bulletNumber;
 	private FileInputStream backgroundUrl;
+	private ImageView lifeOne;
+	private ImageView lifeTwo;
+	private ImageView lifeThree;
+	private boolean bombCollide;
 	private int waveNumber;
 	private boolean wave1;
 	private boolean wave2;
@@ -105,11 +114,11 @@ public class GameEngine extends Application{
 	long finishTime;
 	private SettingsMenu settingsmenu;
 	private PauseMenu pausemenu;
-
+	private int bomb;
 	private void initGameObject() {
 		//Create lists, ship, wave conditions
 
-		ship = new Ship(40,40);
+		ship = new Ship(40,160);
 		gamePane.getChildren().add(ship.getImageView());
 		shipBulletList = new LinkedList<Bullet>();
 		a = 1;
@@ -139,6 +148,10 @@ public class GameEngine extends Application{
 		boo=1;
 		baiterNumber = 5;
 		con=0;
+		bomb = 1;
+		bombCount = 3;
+		bombCollide = false;
+		deleteBomb = false;
 	}
 
 	private void processGame() {
@@ -147,7 +160,7 @@ public class GameEngine extends Application{
 			//MoveShip and FireBullet runs in every wave
 			moveShip();
 			fireBullet();
-	
+			
 			//Start first wave
 			initWave1();
 			//Start second wave
@@ -155,7 +168,7 @@ public class GameEngine extends Application{
 			initWave3();  //To start from a wave, set waveNumber to its wave, and make comment the upper init methods
 			initWave4();
 			initWave5();
-	
+			
 			initWave6();
 		}
 	}
@@ -172,6 +185,8 @@ public class GameEngine extends Application{
 			a = 1;
 			shipBulletList.add(new Bullet(ship.getX(),ship.getY(),ship.getDirection(),1));
 			gamePane.getChildren().add(shipBulletList.get(shipBulletList.size()-1).getImageView());
+			soundManager.play("shoot");
+
 		}
 
 		for(int i=0; i<shipBulletList.size(); i++) { //Move the active bullets
@@ -180,6 +195,36 @@ public class GameEngine extends Application{
 			if(shipBulletList.get(i).getTimer() == 100) { //Delete the bullet if it goes too much
 				removeGameObject(shipBulletList.get(i));
 				shipBulletList.remove(i);
+			}
+		}
+		
+		if(inputManager.getBomb()) { //Get pressed
+			bomb = 0;
+		}
+		if(bomb==0 && !inputManager.getBomb()) { //Create bullet when button released
+			//Bullet created when button is released, because game loop runs faster than key listener. Every time button pressed, this loop runs 4-5 times.
+			//To block that bullet setted on releasing the button
+			bomb = 1;
+			System.out.println("bombpress");
+			if(bombCount>0 && bomb1==null) {
+				bomb1 = new Bullet(ship.getX(),ship.getY(),ship.getDirection(),1);
+				bomb1.setBomb();
+				gamePane.getChildren().add(bomb1.getImageView());
+				bombCount = bombCount-1;
+				soundManager.play("shoot");
+			}
+		}
+		if(bomb1!=null) {
+			bomb1.move(3, 0);
+			bomb1.countTimer();
+			if(bomb1.getTimer() == 50) { //Delete the bullet if it goes too much
+				bombCollide = true;
+				
+			}
+			if(deleteBomb) {
+				gamePane.getChildren().remove(bomb1.getImageView());
+				bomb1 = null;
+				deleteBomb = false;
 			}
 		}
 	}
@@ -420,6 +465,7 @@ public class GameEngine extends Application{
 				con=1;
 			}
 			if(currentTime-finishTime==5) {
+			wave2Set();
 			wave6Set();
 			waveNumber=-1;
 			wave6 = true;
@@ -427,6 +473,7 @@ public class GameEngine extends Application{
 		}
 
 		if(wave6) {
+			processWave2();
 			processWave6();
 		}
 	}
@@ -507,6 +554,7 @@ public class GameEngine extends Application{
 					shipBulletList.remove(i);
 					landerList.remove(j);
 					ship.setScore(ship.getScore()+150);
+					soundManager.play("score");
 				}
 			}
 		}
@@ -517,9 +565,21 @@ public class GameEngine extends Application{
 				ship.decreaseLife();
 			removeGameObject(enemyBulletList.get(i));
 			enemyBulletList.remove(i);
+			soundManager.play("crash");
+			if(lifeThree != null) {
+				gamePane.getChildren().remove(lifeThree);
+				lifeThree = null;
+			}
+			else if(lifeTwo != null) {
+				gamePane.getChildren().remove(lifeTwo);
+				lifeTwo = null;
+			}
+			else if(lifeOne != null) {
+				gamePane.getChildren().remove(lifeOne);
+				lifeOne = null;
 			}
 			}
-
+		}
 		//Check the collision of the astranout and the ship
 		for(int i=0; i<astranoutList.size(); i++) {
 			if(collisionManager.isCollide(astranoutList.get(i),ship))
@@ -527,6 +587,7 @@ public class GameEngine extends Application{
 				removeGameObject(astranoutList.get(i));
 				astranoutList.remove(i);
 				ship.setScore(ship.getScore()+500);
+				soundManager.play("score");
 			}
 		}
 
@@ -536,6 +597,19 @@ public class GameEngine extends Application{
 				ship.decreaseLife();
 				ship.setX(40);
 				ship.setY(40);
+				soundManager.play("crash");
+				if(lifeThree != null) {
+					gamePane.getChildren().remove(lifeThree);
+					lifeThree = null;
+				}
+				else if(lifeTwo != null) {
+					gamePane.getChildren().remove(lifeTwo);
+					lifeTwo = null;
+				}
+				else if(lifeOne != null) {
+					gamePane.getChildren().remove(lifeOne);
+					lifeOne = null;
+				}
 			}
 		}
 
@@ -544,6 +618,19 @@ public class GameEngine extends Application{
 				ship.decreaseLife();
 				ship.setX(40);
 				ship.setY(40);
+				soundManager.play("crash");
+				if(lifeThree != null) {
+					gamePane.getChildren().remove(lifeThree);
+					lifeThree = null;
+				}
+				else if(lifeTwo != null) {
+					gamePane.getChildren().remove(lifeTwo);
+					lifeTwo = null;
+				}
+				else if(lifeOne != null) {
+					gamePane.getChildren().remove(lifeOne);
+					lifeOne = null;
+				}
 			}
 		}
 
@@ -552,6 +639,7 @@ public class GameEngine extends Application{
 			for(int i=0; i<shipBulletList.size(); i++) {
 			if(collisionManager.isCollide(shipBulletList.get(i), boss1)) {
 				boss1.decreaseLife();
+				soundManager.play("score");
 
 			}
 			}
@@ -559,7 +647,37 @@ public class GameEngine extends Application{
 				ship.decreaseLife();
 				ship.setX(40);
 				ship.setY(40);
+				soundManager.play("crash");
+				if(lifeThree != null) {
+					gamePane.getChildren().remove(lifeThree);
+					lifeThree = null;
+				}
+				else if(lifeTwo != null) {
+					gamePane.getChildren().remove(lifeTwo);
+					lifeTwo = null;
+				}
+				else if(lifeOne != null) {
+					gamePane.getChildren().remove(lifeOne);
+					lifeOne = null;
+				}
 			}
+		}
+		
+		if(bombCollide) {
+			for(int j=0; j<landerList.size(); j++) {
+				if(collisionManager.isCollide(landerList.get(j),bomb1))
+				{
+					if(landerList.get(j).getHasAstronaut())
+					landerList.get(j).getAstronaut().setFree();
+					removeGameObject(landerList.get(j));
+					landerList.remove(j);
+					ship.setScore(ship.getScore()+150);
+					soundManager.play("score");
+				}
+			}
+			
+			deleteBomb=true;
+			bombCollide = false;
 		}
 
 		//Check the collision of baiter and the ship and its bullets
@@ -569,12 +687,26 @@ public class GameEngine extends Application{
 				baiter.decreaseLife();
 				removeGameObject(shipBulletList.get(i));
 				shipBulletList.remove(i);
+				soundManager.play("score");
 			}
 			}
 			if(collisionManager.isCollide(baiter, ship)) {
 				ship.decreaseLife();
 				ship.setX(40);
 				ship.setY(40);
+				soundManager.play("crash");
+				if(lifeThree != null) {
+					gamePane.getChildren().remove(lifeThree);
+					lifeThree = null;
+				}
+				else if(lifeTwo != null) {
+					gamePane.getChildren().remove(lifeTwo);
+					lifeTwo = null;
+				}
+				else if(lifeOne != null) {
+					gamePane.getChildren().remove(lifeOne);
+					lifeOne = null;
+				}
 			}
 		}
 
@@ -587,6 +719,7 @@ public class GameEngine extends Application{
 					swarmerList.add(pod1.releaseSwarms());
 					gamePane.getChildren().add(swarmerList.get(swarmerList.size()-1).getImageView());
 					pod1.decreaseLife();
+					soundManager.play("score");
 				}
 
 
@@ -600,6 +733,7 @@ public class GameEngine extends Application{
 			swarmerList.add(pod2.releaseSwarms());
 			gamePane.getChildren().add(swarmerList.get(swarmerList.size()-1).getImageView());
 			pod2.decreaseLife();
+			soundManager.play("score");
 		}
 			}
 		}
@@ -613,6 +747,7 @@ public class GameEngine extends Application{
 					shipBulletList.remove(i);
 					swarmerList.get(j).decreaseLife();
 					ship.setScore(ship.getScore()+150);
+					soundManager.play("score");
 				}
 			}
 		}
@@ -626,6 +761,7 @@ public class GameEngine extends Application{
 					shipBulletList.remove(i);
 					mutantList.remove(j);
 					ship.setScore(ship.getScore()+150);
+					soundManager.play("score");
 				}
 			}
 		}
@@ -736,10 +872,19 @@ public class GameEngine extends Application{
 		else if(inputManager.getUp())
 			ship.move(0, -3);
 
-		if(inputManager.getBoost())
+		if(inputManager.getBoost()) {
 			ship.setSpeed(2);
+			soundManager.play("speed");
+		}
 		if(inputManager.getBoost()==false)
 			ship.setSpeed(1);
+		
+		if(inputManager.getHyperJump()) {
+			if(ship.getDirection()==1)
+			ship.setX(ship.getX()+150);
+			else
+				ship.setX(ship.getX()-150);
+		}
 	}
 
 	private void wave1Set() {
@@ -954,6 +1099,37 @@ public class GameEngine extends Application{
 		BackgroundImage image = new BackgroundImage(new Image(backgroundUrl), BackgroundRepeat.REPEAT, BackgroundRepeat.REPEAT, BackgroundPosition.DEFAULT, null);
 		inputManager = InputManager.getInstance(gameScene);
 		collisionManager = CollisionManager.getInstance();
+		soundManager = SoundManager.getInstance();
+		FileInputStream life = null;
+		try {
+			life = new FileInputStream("./assets/littleShip.png");
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		lifeOne = new ImageView(new Image(life));
+		FileInputStream life2 = null;
+		try {
+			life2 = new FileInputStream("./assets/littleShip.png");
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		lifeTwo = new ImageView(new Image(life2));
+		FileInputStream life3 = null;
+		try {
+			life3 = new FileInputStream("./assets/littleShip.png");
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		lifeThree = new ImageView(new Image(life3));
+		lifeOne.setX(20);
+		lifeOne.setY(20);
+		lifeTwo.setX(80);
+		lifeTwo.setY(20);
+		lifeThree.setX(140);
+		lifeThree.setY(20);
+		gamePane.getChildren().add(lifeOne);
+		gamePane.getChildren().add(lifeTwo);
+		gamePane.getChildren().add(lifeThree);
 		gamePane.setBackground(new Background(image));
 		initGameObject();
 		gameLoop();

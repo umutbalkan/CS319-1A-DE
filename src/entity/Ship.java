@@ -18,6 +18,8 @@ public class Ship extends GameObject{
   private int numberOfBombs;
   private int firingInterval;
   private int lastFire;
+  private int count;
+  private boolean crash;
   //Constructor
   public Ship(double x, double y){
     super(x,y);
@@ -39,6 +41,8 @@ public class Ship extends GameObject{
 	rect.setWidth(64);
 	rect.setHeight(32);
 	score = 0;
+	count = 0;
+	crash = false;
   }
   
   /*
@@ -100,5 +104,24 @@ public class Ship extends GameObject{
   
   public void setScore(int x) {
 	  score = x;
+  }
+  
+  public void animCounter() {
+	  count = count + 1;
+  }
+  
+  public void resCount() {
+	  count = 0;
+  }
+  
+  public int getCount() {
+	  return count;
+  }
+  
+  public void crashAnim(int i) {
+	  if(i==1)
+		  imageView.setImage(null);
+	  else
+		  imageView.setImage(new Image(url));
   }
 }

@@ -12,7 +12,7 @@ import javafx.scene.image.ImageView;
  * */
 public class Bullet extends GameObject{
 
-
+	private FileInputStream bombIm;
   //Constructor
   public Bullet(double x, double y, double d, double f){
     super(x,y);
@@ -21,6 +21,13 @@ public class Bullet extends GameObject{
     url = null;
 	try {
 		url = new FileInputStream("./assets/bullet.png");
+	} catch (FileNotFoundException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+	bombIm = null;
+	try {
+		bombIm = new FileInputStream("./assets/bomb.png");
 	} catch (FileNotFoundException e) {
 		// TODO Auto-generated catch block
 		e.printStackTrace();
@@ -54,7 +61,21 @@ public class Bullet extends GameObject{
 	  timer = timer + 1;
   }
   
+  public void setWidth() {
+	  rect.setWidth(1200);
+  }
+  
+  public void setHeight() {
+	  rect.setHeight(800);
+  }
+  
   public int getTimer() {
 		return timer;
 	}
+  
+  public void setBomb() {
+	  imageView.setImage(new Image(bombIm));
+	  setWidth();
+	  setHeight();
+  }
 }
