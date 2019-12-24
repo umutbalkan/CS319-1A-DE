@@ -18,10 +18,12 @@ import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.image.PixelWriter;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
@@ -153,10 +155,13 @@ public class GameEngine extends Application{
 	private int wave6con;
 	private int wave7con;
 	private double clipMin;
+	private Canvas canvas;
+	private GraphicsContext gc;
+	private PixelWriter mapDrawer;
 	private void initGameObject() {
 		//Create lists, ship, wave conditions
 
-		ship = new Ship(640,410);
+		ship = new Ship(640,210);
 		gamePane.getChildren().add(ship.getImageView());
 		shipBulletList = new LinkedList<Bullet>();
 		bomberList = new LinkedList<Bomber>();
@@ -1503,8 +1508,12 @@ public class GameEngine extends Application{
 		leftTop.setStyle("-fx-background-color: black;");
 		map = new Pane();
 		map.setPrefSize(680, 100);
-		map.setStyle("-fx-background-color: brown;");
-		
+		//map.setStyle("-fx-background-color: black;");
+		canvas = new Canvas(680,100);
+		gc = canvas.getGraphicsContext2D();
+		mapDrawer = canvas.getGraphicsContext2D().getPixelWriter();
+		gc.setFill(Color.RED);
+		gc.fillRect(100, 200, 50, 50);
 		rightTop = new Pane();
 		rightTop.setPrefSize(300, 100);
 		rightTop.setStyle("-fx-background-color: gray;");
@@ -1523,7 +1532,7 @@ public class GameEngine extends Application{
 		gameStage.setScene(gameScene);
 
 		
-		backgroundUrl = null;
+		backgroundUrl = null; 
 		inputManager = InputManager.getInstance(gameScene);
 		collisionManager = CollisionManager.getInstance();
 		soundManager = SoundManager.getInstance();
@@ -1589,6 +1598,8 @@ public class GameEngine extends Application{
         		//ship.getX(), 
         gamePane.setClip(clip);
         gamePane.translateXProperty().bind(clip.xProperty().multiply(-1));
+
+		
         
 		initGameObject();
 		gameLoop();
