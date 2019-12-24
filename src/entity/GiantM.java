@@ -28,11 +28,18 @@ public class GiantM extends Enemy{
 		ySpeed = 2;
 		xDirection = 1;
 		yDirection = 1;
-		numberOfLives = 150;
+		numberOfLives = 400;
 	}
 	
 	public void move(int x, int y) {
-		
+		if(xDirection<0)
+			imageView.setScaleX(-1.0);
+		if(xDirection>0)
+			imageView.setScaleX(1.0);
+		if(yDirection<0)
+			imageView.setScaleY(-1.0);
+		if(yDirection>0)
+			imageView.setScaleY(1.0);
 		  	
 		  	xCoordinate = xCoordinate + xDirection*x*xSpeed;
 			yCoordinate = yCoordinate + yDirection*y*ySpeed;
@@ -50,7 +57,15 @@ public class GiantM extends Enemy{
 	public void setYDirection(double y) {
 		yDirection = y;
 	}
-
+	
+	public double getXDirection(){
+		return xDirection;
+	}
+	
+	public double getYDirection() {
+		return yDirection;
+	}
+	
 	public void decreaseLife() {
 		numberOfLives = numberOfLives-1;
 	}
