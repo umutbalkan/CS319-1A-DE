@@ -114,6 +114,8 @@ public class GameEngine extends Application{
 	private boolean wave5Final;
 	private boolean wave6;
 	private boolean wave6Final;
+	private boolean wave7;
+	private boolean wave7Final;
 	double yo=0;
 	boolean spacePresse = false;
 	private int as1;
@@ -160,6 +162,8 @@ public class GameEngine extends Application{
 		wave5Final = false;
 		wave6 = false;
 		wave6Final = false;
+		wave7 = false;
+		wave7Final = false;
 		astranoutList = new LinkedList<Astronaut>();
 		landerList = new LinkedList<Lander>();
 		enemyBulletList = new LinkedList<Bullet>();
@@ -191,6 +195,7 @@ public class GameEngine extends Application{
 			initWave5();
 			*/
 			initWave6();
+			initWave7();
 		}
 	}
 
@@ -508,8 +513,91 @@ public class GameEngine extends Application{
 		if(wave6) {
 			processWave6();
 		}
+		if(wave6 == true && pod1==null && pod2==null && swarmerList.size()==0) {
+			int ran = bomberList.size();
+			while(ran>0) {
+				removeGameObject(bomberList.get(0));
+				bomberList.remove(0);
+				ran--;
+			}
+			wave6 = false;
+			wave6Final = true;
+		}
+		if(wave6Final) {
+			if(b==1) {
+				boss1 = new GiantM(ship.getX()+400,ship.getY());
+				boss1.setBoss2();
+				gamePane.getChildren().add(boss1.getImageView());
+				b=0;
+			}
+			if(boss1.getLife()<0) {
+				wave6Final=false;
+
+				waveNumber = 7;
+				gamePane.getChildren().remove(boss1.getImageView());
+				boss1 = null;
+			}
+			else {
+				processWave6Final();
+			}
+		}
 	}
 
+	private void initWave7() {
+		if(waveNumber == 7) {
+			int ran = astranoutList.size();
+			while(ran>0) {
+				removeGameObject(astranoutList.get(0));
+				astranoutList.remove(0);
+				ran--;
+			}
+			long currentTime = (System.currentTimeMillis()/1000);
+			if(con==0) {
+				finishTime = (System.currentTimeMillis()/1000);
+				con=1;
+			}
+			if(currentTime-finishTime==5) {
+			wave2Set();
+			wave6Set();
+			waveNumber=-1;
+			wave7 = true;
+			}
+		}
+
+		if(wave7) {
+			processWave2();
+			processWave6();
+		}
+		if(wave7 == true && pod1==null && pod2==null && swarmerList.size()==0) {
+			int ran = bomberList.size();
+			while(ran>0) {
+				removeGameObject(bomberList.get(0));
+				bomberList.remove(0);
+				ran--;
+			}
+			wave7 = false;
+			wave7Final = true;
+		}
+		if(wave7Final) {
+			if(b==0) {
+				boss1 = new GiantM(ship.getX()+400,ship.getY());
+				boss1.setBoss2();
+				gamePane.getChildren().add(boss1.getImageView());
+				b=1;
+			}
+			if(boss1.getLife()<0) {
+				wave7Final=false;
+
+				waveNumber = 8;
+				gamePane.getChildren().remove(boss1.getImageView());
+				boss1 = null;
+			}
+			else {
+				//processFinal();
+			}
+		}
+	}
+	
 	private void moveLanders() {
 		for(int i=0; i<landerList.size(); i++) {
 			if(landerList.get(i).getHasAstronaut()==false) {
@@ -756,6 +844,27 @@ public class GameEngine extends Application{
 
 		for(int i=0; i<mutantList.size(); i++) {
 			if(collisionManager.isCollide(ship, mutantList.get(i))) {
+				ship.decreaseLife();
+				ship.setX(40);
+				ship.setY(40);
+				soundManager.play("crash");
+				if(lifeThree != null) {
+					leftTop.getChildren().remove(lifeThree);
+					lifeThree = null;
+				}
+				else if(lifeTwo != null) {
+					leftTop.getChildren().remove(lifeTwo);
+					lifeTwo = null;
+				}
+				else if(lifeOne != null) {
+					leftTop.getChildren().remove(lifeOne);
+					lifeOne = null;
+				}
+			}
+		}
+		
+		for(int i=0; i<swarmerList.size(); i++) {
+			if(collisionManager.isCollide(ship, swarmerList.get(i))) {
 				ship.decreaseLife();
 				ship.setX(40);
 				ship.setY(40);
@@ -1089,6 +1198,24 @@ public class GameEngine extends Application{
 	}
 
 	private void processWave1Final() {
+		if(ship.getX()>boss1.getX())
+			boss1.setXDirection(1);
+		else
+			boss1.setXDirection(-1);
+
+		if(ship.getY()< boss1.getY())
+			boss1.setYDirection(-1);
+		else
+			boss1.setYDirection(1);
+
+		boss1.move(1,1);
+
+		checkCollision();
+
+		boss1Fire();
+	}
+	
+	private void processWave6Final(){
 		if(ship.getX()>boss1.getX())
 			boss1.setXDirection(1);
 		else

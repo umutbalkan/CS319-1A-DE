@@ -33,7 +33,7 @@ public class Swarmer extends Enemy{
 	ySpeed = 2;
 	xDirection = 1;
 	yDirection = 1;
-	numberOfLives = 10;
+	numberOfLives = 1;
 }
 
 /*
