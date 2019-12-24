@@ -16,6 +16,7 @@ import javafx.application.Application;
 import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
@@ -30,6 +31,9 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import sound.SoundManager;
 import entity.Astronaut;
@@ -93,6 +97,7 @@ public class GameEngine extends Application{
 	private int bulletNumber;
 	private FileInputStream backgroundUrl;
 	private ImageView lifeOne;
+	private ImageView iBomb1, iBomb2, iBomb3;
 	private ImageView lifeTwo;
 	private ImageView lifeThree;
 	private boolean bombCollide;
@@ -124,6 +129,11 @@ public class GameEngine extends Application{
 	private PauseMenu pausemenu;
 	private int bomb;
 	private HBox topVBox;
+	private Pane leftTop;
+	private Pane map;
+	private Pane rightTop;
+	private Font font2;
+	private Label score_label;
 	private void initGameObject() {
 		//Create lists, ship, wave conditions
 
@@ -169,6 +179,7 @@ public class GameEngine extends Application{
 		//Process method of the game
 		if(ship.getNumberOfLives()!=0) {
 			//MoveShip and FireBullet runs in every wave
+			update_scoreLabel();
 			moveShip();
 			fireBullet();
 			initWave1();
@@ -221,6 +232,7 @@ public class GameEngine extends Application{
 				gamePane.getChildren().add(bomb1.getImageView());
 				bombCount = bombCount-1;
 				soundManager.play("shoot");
+
 			}
 		}
 		if(bomb1!=null) {
@@ -235,6 +247,18 @@ public class GameEngine extends Application{
 				bomb1 = null;
 				deleteBomb = false;
 			}
+		}
+		if(bombCount == 2) {
+			leftTop.getChildren().remove(iBomb1);
+			iBomb1 = null;
+		}
+		if(bombCount == 1) {
+			leftTop.getChildren().remove(iBomb2);
+			iBomb2 = null;
+		}
+		if(bombCount == 0) {
+			leftTop.getChildren().remove(iBomb3);
+			iBomb3 = null;
 		}
 	}
 
@@ -611,15 +635,15 @@ public class GameEngine extends Application{
 			enemyBulletList.remove(i);
 			soundManager.play("crash");
 			if(lifeThree != null) {
-				gamePane.getChildren().remove(lifeThree);
+				leftTop.getChildren().remove(lifeThree);
 				lifeThree = null;
 			}
 			else if(lifeTwo != null) {
-				gamePane.getChildren().remove(lifeTwo);
+				leftTop.getChildren().remove(lifeTwo);
 				lifeTwo = null;
 			}
 			else if(lifeOne != null) {
-				gamePane.getChildren().remove(lifeOne);
+				leftTop.getChildren().remove(lifeOne);
 				lifeOne = null;
 			}
 			}
@@ -643,15 +667,15 @@ public class GameEngine extends Application{
 				ship.setY(40);
 				soundManager.play("crash");
 				if(lifeThree != null) {
-					gamePane.getChildren().remove(lifeThree);
+					leftTop.getChildren().remove(lifeThree);
 					lifeThree = null;
 				}
 				else if(lifeTwo != null) {
-					gamePane.getChildren().remove(lifeTwo);
+					leftTop.getChildren().remove(lifeTwo);
 					lifeTwo = null;
 				}
 				else if(lifeOne != null) {
-					gamePane.getChildren().remove(lifeOne);
+					leftTop.getChildren().remove(lifeOne);
 					lifeOne = null;
 				}
 			}
@@ -664,15 +688,15 @@ public class GameEngine extends Application{
 				ship.setY(40);
 				soundManager.play("crash");
 				if(lifeThree != null) {
-					gamePane.getChildren().remove(lifeThree);
+					leftTop.getChildren().remove(lifeThree);
 					lifeThree = null;
 				}
 				else if(lifeTwo != null) {
-					gamePane.getChildren().remove(lifeTwo);
+					leftTop.getChildren().remove(lifeTwo);
 					lifeTwo = null;
 				}
 				else if(lifeOne != null) {
-					gamePane.getChildren().remove(lifeOne);
+					leftTop.getChildren().remove(lifeOne);
 					lifeOne = null;
 				}
 			}
@@ -693,15 +717,15 @@ public class GameEngine extends Application{
 				ship.setY(40);
 				soundManager.play("crash");
 				if(lifeThree != null) {
-					gamePane.getChildren().remove(lifeThree);
+					leftTop.getChildren().remove(lifeThree);
 					lifeThree = null;
 				}
 				else if(lifeTwo != null) {
-					gamePane.getChildren().remove(lifeTwo);
+					leftTop.getChildren().remove(lifeTwo);
 					lifeTwo = null;
 				}
 				else if(lifeOne != null) {
-					gamePane.getChildren().remove(lifeOne);
+					leftTop.getChildren().remove(lifeOne);
 					lifeOne = null;
 				}
 			}
@@ -740,15 +764,15 @@ public class GameEngine extends Application{
 				ship.setY(40);
 				soundManager.play("crash");
 				if(lifeThree != null) {
-					gamePane.getChildren().remove(lifeThree);
+					leftTop.getChildren().remove(lifeThree);
 					lifeThree = null;
 				}
 				else if(lifeTwo != null) {
-					gamePane.getChildren().remove(lifeTwo);
+					leftTop.getChildren().remove(lifeTwo);
 					lifeTwo = null;
 				}
 				else if(lifeOne != null) {
-					gamePane.getChildren().remove(lifeOne);
+					leftTop.getChildren().remove(lifeOne);
 					lifeOne = null;
 				}
 			}
@@ -1036,7 +1060,7 @@ public class GameEngine extends Application{
 			public void handle(long arg0) {
 				
 				// play screen
-				if(layout.getChildren().get(0) == gamePane) {
+				if(layout.getChildren().get(0) == root) {
 					if(inputManager.getEsc()) {
 						layout.getChildren().remove(0);
 						layout.getChildren().add(pausemenu);
@@ -1049,7 +1073,7 @@ public class GameEngine extends Application{
 				if(mainmenu.isPlayClicked()) {
 					mainmenu.setPlayClicked(false);
 					layout.getChildren().remove(0);
-					layout.getChildren().add(gamePane);
+					layout.getChildren().add(root);
 				}
 				if(mainmenu.isHighScoresClicked()) {
 					mainmenu.setHighScoresClicked(false);
@@ -1082,7 +1106,7 @@ public class GameEngine extends Application{
 					if(pausemenu.isBackClicked()) {
 						pausemenu.setBackClicked(false);
 						layout.getChildren().remove(0);
-						layout.getChildren().add(gamePane);
+						layout.getChildren().add(root);
 					}
 				}
 				
@@ -1115,6 +1139,18 @@ public class GameEngine extends Application{
 
 		timer.start();
 	}
+	
+	
+	public void update_scoreLabel() {
+		int scr = 0;
+		int temp = ship.getScore();
+		String score = "";
+		if(scr != temp) {
+			scr = temp;
+			score = Integer.toString(scr);
+			score_label.setText(score);
+		}
+	}
 
 	public void removeGameObject(GameObject obj) {
 		gamePane.getChildren().remove(obj.getImageView());
@@ -1134,59 +1170,84 @@ public class GameEngine extends Application{
 		pausemenu = layout.getLayoutPause();
 		root = new VBox();
 		gamePane = new Pane();
+		gamePane.setPrefSize(1280, 720);
 		topVBox = new HBox();
+		leftTop = new Pane();
+		leftTop.setPrefSize(300, 100);
+		leftTop.setStyle("-fx-background-color: black;");
+		map = new Pane();
+		map.setPrefSize(680, 100);
+		map.setStyle("-fx-background-color: brown;");
+		
+		rightTop = new Pane();
+		rightTop.setPrefSize(300, 100);
+		rightTop.setStyle("-fx-background-color: gray;");
+		
 	}
 	
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 
-		gameScene = new Scene(layout, 1280, 800);
+		gameScene = new Scene(layout, 1280, 820);
+		topVBox.getChildren().addAll(leftTop,map,rightTop);
 		root.getChildren().add(topVBox);
 		root.getChildren().add(gamePane);
 		gameStage = primaryStage;
 		gameStage.setScene(gameScene);
 
-
+		
 		backgroundUrl = null;
-		try {
-			backgroundUrl = new FileInputStream("./assets/playBG1.png");
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-		BackgroundImage image = new BackgroundImage(new Image(backgroundUrl), BackgroundRepeat.REPEAT, BackgroundRepeat.REPEAT, BackgroundPosition.DEFAULT, null);
 		inputManager = InputManager.getInstance(gameScene);
 		collisionManager = CollisionManager.getInstance();
 		soundManager = SoundManager.getInstance();
 		FileInputStream life = null;
-		try {
-			life = new FileInputStream("./assets/littleShip.png");
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-		lifeOne = new ImageView(new Image(life));
+		FileInputStream life1 = null;
 		FileInputStream life2 = null;
+		FileInputStream fbomb = null;
+		FileInputStream fbomb1 = null;
+		FileInputStream fbomb2 = null;
 		try {
+			backgroundUrl = new FileInputStream("./assets/playBG1.png");
+			font2 = Font.loadFont(new FileInputStream(new File("./assets/visitor.ttf")), 32);
+			life = new FileInputStream("./assets/littleShip.png");
+			life1 = new FileInputStream("./assets/littleShip.png");
 			life2 = new FileInputStream("./assets/littleShip.png");
+			
+			fbomb = new FileInputStream("./assets/bomb.png");
+			fbomb1 = new FileInputStream("./assets/bomb.png");
+			fbomb2 = new FileInputStream("./assets/bomb.png");
+			
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
+		BackgroundImage image = new BackgroundImage(new Image(backgroundUrl), BackgroundRepeat.REPEAT, BackgroundRepeat.REPEAT, BackgroundPosition.DEFAULT, null);
+		lifeOne = new ImageView(new Image(life1));
 		lifeTwo = new ImageView(new Image(life2));
-		FileInputStream life3 = null;
-		try {
-			life3 = new FileInputStream("./assets/littleShip.png");
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-		lifeThree = new ImageView(new Image(life3));
-		lifeOne.setX(20);
-		lifeOne.setY(20);
-		lifeTwo.setX(80);
-		lifeTwo.setY(20);
-		lifeThree.setX(140);
-		lifeThree.setY(20);
-		gamePane.getChildren().add(lifeOne);
-		gamePane.getChildren().add(lifeTwo);
-		gamePane.getChildren().add(lifeThree);
+		lifeThree = new ImageView(new Image(life));
+		iBomb1 = new ImageView(new Image(fbomb));
+		iBomb2 = new ImageView(new Image(fbomb1));
+		iBomb3 = new ImageView(new Image(fbomb2));
+		
+		iBomb1.setX(250);
+		iBomb1.setY(0);
+		iBomb2.setX(250);
+		iBomb2.setY(30);
+		iBomb3.setX(250);
+		iBomb3.setY(60);
+		lifeOne.setX(0);
+		lifeOne.setY(0);
+		lifeTwo.setX(60);
+		lifeTwo.setY(0);
+		lifeThree.setX(120);
+		lifeThree.setY(0);
+		score_label = new Label("0");
+		score_label.setFont(font2);
+		score_label.setTextFill(Color.web("#ffd500"));
+		score_label.setTranslateX(100);
+		score_label.setTranslateY(70);
+		leftTop.getChildren().addAll(lifeOne,lifeTwo,lifeThree);
+		leftTop.getChildren().addAll(iBomb1,iBomb2,iBomb3);
+		leftTop.getChildren().add(score_label);
 		gamePane.setBackground(new Background(image));
 		initGameObject();
 		gameLoop();
