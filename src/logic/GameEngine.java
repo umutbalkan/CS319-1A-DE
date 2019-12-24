@@ -103,6 +103,7 @@ public class GameEngine extends Application{
 	private MotherShip pod1;
 	private MotherShip pod2;
 	private GiantM boss1;
+	private GiantM boss2;
 	private Baiter baiter;
 	private int bulletNumber;
 	private FileInputStream backgroundUrl;
@@ -176,7 +177,7 @@ public class GameEngine extends Application{
 		bulletNumber = 0;
 		wave1= false;
 		wave2 = false;
-		waveNumber = 1;
+		waveNumber = -1;
 		wave1Final = false;
 		wave2Final = false;
 		wave3 = false;
@@ -188,7 +189,7 @@ public class GameEngine extends Application{
 		wave6 = false;
 		wave6Final = false;
 		wave7 = false;
-		wave7Final = false;
+		wave7Final = true;
 		astranoutList = new LinkedList<Astronaut>();
 		rectList = new LinkedList<Rectangle>();
 		landerList = new LinkedList<Lander>();
@@ -632,9 +633,11 @@ public class GameEngine extends Application{
 		}
 		if(wave7Final) {
 			if(wave7con==1) {
-				boss1 = new GiantM(ship.getX()+400,ship.getY());
-				boss1.setBoss2();
+				boss1 = new GiantM(ship.getX()+600,ship.getY());
+				boss2 = new GiantM(ship.getX()-600,ship.getY());
+				boss2.setBoss2();
 				gamePane.getChildren().add(boss1.getImageView());
+				gamePane.getChildren().add(boss2.getImageView());
 				wave7con=0;
 			}
 			if(boss1.getLife()<0) {
@@ -645,9 +648,38 @@ public class GameEngine extends Application{
 				boss1 = null;
 			}
 			else {
-				//processFinal();
+				processFinal();
 			}
 		}
+	}
+	
+	private void processFinal() {
+		if(ship.getX()>boss1.getX())
+			boss1.setXDirection(1);
+		else
+			boss1.setXDirection(-1);
+
+		if(ship.getY()< boss1.getY())
+			boss1.setYDirection(-1);
+		else
+			boss1.setYDirection(1);
+		
+		if(ship.getX()>boss1.getX())
+			boss2.setXDirection(1);
+		else
+			boss2.setXDirection(-1);
+
+		if(ship.getY()< boss2.getY())
+			boss2.setYDirection(-1);
+		else
+			boss2.setYDirection(1);
+
+		boss1.move(0,1);
+		boss2.move(0,1);
+		checkCollision();
+
+		boss1Fire();
+		boss2Fire();
 	}
 	
 	private void moveLanders() {
@@ -749,6 +781,40 @@ public class GameEngine extends Application{
 					(ship.getX()-boss1.getX())/200,(ship.getY()-boss1.getY())/200));
 		enemyBulletList.get(enemyBulletList.size()-1).setSpeed(2);
 		enemyBulletList.get(enemyBulletList.size()-1).setBug();
+		gamePane.getChildren().add(enemyBulletList.get(enemyBulletList.size()-1).getImageView());
+		gamePane.getChildren().add(enemyBulletList.get(enemyBulletList.size()-2).getImageView());
+		}
+		
+		for(int i=0; i<enemyBulletList.size(); i++) {
+			enemyBulletList.get(i).move(1, 1);
+			enemyBulletList.get(i).countTimer();
+			if(enemyBulletList.get(i).getTimer() == 120) {
+				removeGameObject(enemyBulletList.get(i));
+				enemyBulletList.remove(i);
+			}
+		}
+	}
+	
+	private void boss2Fire() {
+		int randomFire = (int)(Math.random() * 50) + 0;
+		//Create fire from the coordinates of the lander, direction to ship
+		if(randomFire == 5 && boss2!=null) {
+			if(boss2.getXDirection()>0)
+		enemyBulletList.add(new Bullet(boss2.getX()+225,boss2.getY(),
+				(ship.getX()-boss2.getX())/200,(ship.getY()-boss2.getY())/200));
+			if(boss2.getXDirection()<0)
+				enemyBulletList.add(new Bullet(boss2.getX(),boss2.getY(),
+						(ship.getX()-boss1.getX())/200,(ship.getY()-boss2.getY())/200));
+		enemyBulletList.get(enemyBulletList.size()-1).setSpeed(2);
+		enemyBulletList.get(enemyBulletList.size()-1).setBug2();
+		if(boss2.getXDirection()>0)
+		enemyBulletList.add(new Bullet(boss2.getX()+225,boss2.getY()+246,
+				(ship.getX()-boss2.getX())/200,(ship.getY()-boss2.getY())/200));
+		if(boss2.getXDirection()<0)
+			enemyBulletList.add(new Bullet(boss2.getX(),boss2.getY()+246,
+					(ship.getX()-boss2.getX())/200,(ship.getY()-boss2.getY())/200));
+		enemyBulletList.get(enemyBulletList.size()-1).setSpeed(2);
+		enemyBulletList.get(enemyBulletList.size()-1).setBug2();
 		gamePane.getChildren().add(enemyBulletList.get(enemyBulletList.size()-1).getImageView());
 		gamePane.getChildren().add(enemyBulletList.get(enemyBulletList.size()-2).getImageView());
 		}
@@ -942,6 +1008,34 @@ public class GameEngine extends Application{
 			}
 			}
 			if(collisionManager.isCollide(boss1, ship)) {
+				ship.decreaseLife();
+				ship.setX(40);
+				ship.setY(40);
+				soundManager.play("crash");
+				if(lifeThree != null) {
+					leftTop.getChildren().remove(lifeThree);
+					lifeThree = null;
+				}
+				else if(lifeTwo != null) {
+					leftTop.getChildren().remove(lifeTwo);
+					lifeTwo = null;
+				}
+				else if(lifeOne != null) {
+					leftTop.getChildren().remove(lifeOne);
+					lifeOne = null;
+				}
+			}
+		}
+		
+		if(boss2 != null) {
+			for(int i=0; i<shipBulletList.size(); i++) {
+			if(collisionManager.isCollide(shipBulletList.get(i), boss2)) {
+				boss2.decreaseLife();
+				removeGameObject(shipBulletList.get(i));
+				shipBulletList.remove(i);
+			}
+			}
+			if(collisionManager.isCollide(boss2, ship)) {
 				ship.decreaseLife();
 				ship.setX(40);
 				ship.setY(40);
@@ -1173,7 +1267,6 @@ public class GameEngine extends Application{
 
 		if(inputManager.getBoost()) {
 			ship.setSpeed(2);
-			soundManager.play("speed");
 		}
 		if(inputManager.getBoost()==false)
 			ship.setSpeed(1);
