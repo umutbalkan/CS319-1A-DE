@@ -146,7 +146,13 @@ public class GameEngine extends Application{
 	private Font font2;
 	private Label score_label;
 	private Rectangle clip;
-	private int x;
+	private int x;	private int wave1con;
+	private int wave2con;
+	private int wave3con;
+	private int wave4con;
+	private int wave5con;
+	private int wave6con;
+	private int wave7con;
 	private double clipMin;
 	private Canvas canvas;
 	private GraphicsContext gc;
@@ -192,6 +198,13 @@ public class GameEngine extends Application{
 		bombCount = 3;
 		bombCollide = false;
 		deleteBomb = false;
+		wave1con = 1; 
+		wave2con = 1; 
+		wave3con = 1; 
+		wave4con = 1; 
+		wave5con = 1; 
+		wave6con = 1; 
+		wave7con = 1; 
 	}
 
 	private void processGame() {
@@ -217,6 +230,7 @@ public class GameEngine extends Application{
 			initWave5();
 			
 			initWave6();
+			
 			initWave7();
 		}
 		if(ship.getNumberOfLives() == 0) {
@@ -305,9 +319,9 @@ public class GameEngine extends Application{
 
 		if(wave1 == true && landerList.size()==0) { //Finish first wave when all landers are dead
 			long currentTime = (System.currentTimeMillis()/1000);
-			if(b==1) {
+			if(wave1con==1) {
 			finishTime = (System.currentTimeMillis()/1000);
-			b = 0;
+			wave1con = 0;
 			}
 			if(currentTime-finishTime==5) { //Wait five seconds and start wave1 final boss
 			wave1 = false;
@@ -362,10 +376,10 @@ public class GameEngine extends Application{
 			wave2Final = true;
 		}
 		if(wave2Final) {
-			if(b==0) {
+			if(wave2con==1) {
 				boss1 = new GiantM(ship.getX()+400,ship.getY());
 				gamePane.getChildren().add(boss1.getImageView());
-				b=1;
+				wave2con=0;
 			}
 			if(boss1.getLife()<0) {
 				wave2Final=false;
@@ -407,10 +421,10 @@ public class GameEngine extends Application{
 			wave3Final = true;
 		}
 		if(wave3Final) {
-			if(b==1) {
+			if(wave3con==1) {
 				boss1 = new GiantM(ship.getX()+400,ship.getY());
 				gamePane.getChildren().add(boss1.getImageView());
-				b=0;
+				wave3con=0;
 			}
 			if(boss1.getLife()<0) {
 				wave2Final=false;
@@ -452,10 +466,10 @@ public class GameEngine extends Application{
 			wave4Final = true;
 		}
 		if(wave4Final) {
-			if(b==0) {
+			if(wave4con==1) {
 				boss1 = new GiantM(ship.getX()+400,ship.getY());
 				gamePane.getChildren().add(boss1.getImageView());
-				b=1;
+				wave4con=0;
 			}
 			if(boss1.getLife()<0) {
 				wave4Final=false;
@@ -497,10 +511,10 @@ public class GameEngine extends Application{
 			wave5Final = true;
 		}
 		if(wave5Final) {
-			if(b==1) {
+			if(wave5con==1) {
 				boss1 = new GiantM(ship.getX()+400,ship.getY());
 				gamePane.getChildren().add(boss1.getImageView());
-				b=0;
+				wave5con=0;
 			}
 			if(boss1.getLife()<0) {
 				wave5Final=false;
@@ -549,11 +563,11 @@ public class GameEngine extends Application{
 			wave6Final = true;
 		}
 		if(wave6Final) {
-			if(b==1) {
+			if(wave6con==1) {
 				boss1 = new GiantM(ship.getX()+400,ship.getY());
 				boss1.setBoss2();
 				gamePane.getChildren().add(boss1.getImageView());
-				b=0;
+				wave6con=0;
 			}
 			if(boss1.getLife()<0) {
 				wave6Final=false;
@@ -604,11 +618,11 @@ public class GameEngine extends Application{
 			wave7Final = true;
 		}
 		if(wave7Final) {
-			if(b==0) {
+			if(wave7con==1) {
 				boss1 = new GiantM(ship.getX()+400,ship.getY());
 				boss1.setBoss2();
 				gamePane.getChildren().add(boss1.getImageView());
-				b=1;
+				wave7con=0;
 			}
 			if(boss1.getLife()<0) {
 				wave7Final=false;
@@ -1161,14 +1175,14 @@ public class GameEngine extends Application{
 	}
 
 	private void wave1Set() {
-		setAstranouts(0,600,6);
-		setLanders(0,300,6);
+		setAstranouts(0,600,18);
+		setLanders(0,300,18);
 	}
 
 	private void wave2Set() {
 		baiterNumber = 5;
-		setAstranouts(0,600, 6);
-		setLanders(0,300,6);
+		setAstranouts(0,600, 30);
+		setLanders(0,300,30);
 		baiter = new Baiter(ship.getX()+500,ship.getY());
 		gamePane.getChildren().add(baiter.getImageView());
 	}
@@ -1258,7 +1272,7 @@ public class GameEngine extends Application{
 		for(int i=0; i<size; i++) {
 			astranoutList.add(new Astronaut(x,y));
 			gamePane.getChildren().add(astranoutList.get(i).getImageView());
-			x = x+200;
+			x = x+400;
 		}
 	}
 
@@ -1267,7 +1281,7 @@ public class GameEngine extends Application{
 			int rand = (int)(Math.random() * 200) + 200;
 			landerList.add(new Lander(x,rand));
 			gamePane.getChildren().add(landerList.get(i).getImageView());
-			x = x+200;
+			x = x+400;
 		}
 	}
 
