@@ -7,7 +7,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
 public class GiantM extends Enemy{
-
+	FileInputStream boss2Im;
 	public GiantM(double x, double y) {
 		super(x, y);
 		// TODO Auto-generated constructor stub
@@ -15,6 +15,13 @@ public class GiantM extends Enemy{
 		url = null;
 		try {
 			url = new FileInputStream("./assets/boss.png");
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		boss2Im = null;
+		try {
+			boss2Im = new FileInputStream("./assets/boss2.png");
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -72,5 +79,9 @@ public class GiantM extends Enemy{
 	
 	public int getLife() {
 		return numberOfLives;
+	}
+	
+	public void setBoss2() {
+		imageView.setImage(new Image(boss2Im));
 	}
 }
