@@ -30,6 +30,7 @@ import javafx.stage.Stage;
 import sound.SoundManager;
 import entity.Astronaut;
 import entity.Baiter;
+import entity.Bomber;
 import entity.Bullet;
 import entity.GameObject;
 import entity.GiantM;
@@ -75,6 +76,8 @@ public class GameEngine extends Application{
 	private LinkedList<Bullet> enemyBulletList;
 	private LinkedList<Swarmer> swarmerList;
 	private LinkedList<Mutant> mutantList;
+	private LinkedList<Bomber> bomberList;
+	private LinkedList<Bullet> mineList;
 	private Bullet bomb1;
 	private Bullet bomb2;
 	private Bullet bomb3;
@@ -121,6 +124,7 @@ public class GameEngine extends Application{
 		ship = new Ship(40,160);
 		gamePane.getChildren().add(ship.getImageView());
 		shipBulletList = new LinkedList<Bullet>();
+		bomberList = new LinkedList<Bomber>();
 		a = 1;
 		b = 1;
 		as1 = 0;
@@ -129,7 +133,7 @@ public class GameEngine extends Application{
 		bulletNumber = 0;
 		wave1= false;
 		wave2 = false;
-		waveNumber = 1;
+		waveNumber = 2;
 		wave1Final = false;
 		wave2Final = false;
 		wave3 = false;
@@ -145,6 +149,7 @@ public class GameEngine extends Application{
 		enemyBulletList = new LinkedList<Bullet>();
 		swarmerList = new LinkedList<Swarmer>();
 		mutantList = new LinkedList<Mutant>();
+		mineList = new LinkedList<Bullet>();
 		boo=1;
 		baiterNumber = 5;
 		con=0;
@@ -160,10 +165,11 @@ public class GameEngine extends Application{
 			//MoveShip and FireBullet runs in every wave
 			moveShip();
 			fireBullet();
-			
+			/*
 			//Start first wave
 			initWave1();
 			//Start second wave
+			*/
 			initWave2();
 			initWave3();  //To start from a wave, set waveNumber to its wave, and make comment the upper init methods
 			initWave4();
@@ -465,7 +471,6 @@ public class GameEngine extends Application{
 				con=1;
 			}
 			if(currentTime-finishTime==5) {
-			wave2Set();
 			wave6Set();
 			waveNumber=-1;
 			wave6 = true;
@@ -473,7 +478,6 @@ public class GameEngine extends Application{
 		}
 
 		if(wave6) {
-			processWave2();
 			processWave6();
 		}
 	}
@@ -495,6 +499,22 @@ public class GameEngine extends Application{
 
 			//Move the lander
 			landerList.get(i).move();
+			}
+	}
+	
+	private void moveBombers() {
+		for(int i=0; i<bomberList.size(); i++) {
+			//Prevent getting out of map
+			if(bomberList.get(i).getY()==650)
+				bomberList.get(i).setYDirection(1);
+			if(bomberList.get(i).getY()==200)
+				bomberList.get(i).setYDirection(-1);
+			if(bomberList.get(i).getX()==0)
+				bomberList.get(i).setDirection(1);
+			if(bomberList.get(i).getX()>1200)
+				bomberList.get(i).setDirection(-1);
+			//Move the lander
+			bomberList.get(i).move();
 			}
 	}
 
@@ -536,6 +556,27 @@ public class GameEngine extends Application{
 		if(enemyBulletList.get(i).getTimer() == 120) {
 			removeGameObject(enemyBulletList.get(i));
 			enemyBulletList.remove(i);
+		}
+	}
+	}
+	
+	private void leaveMines() {
+		int randEnemy = (int)(Math.random() * bomberList.size()) + 0;
+		//Select random fire time
+		int randomFire = (int)(Math.random() * 100) + 0;
+		//Create fire from the coordinates of the lander, direction to ship
+		if(randomFire == 5 && bomberList.size()!=0) {
+			mineList.add(new Bullet(bomberList.get(randEnemy).getX(),bomberList.get(randEnemy).getY(),
+				(ship.getX()-bomberList.get(randEnemy).getX())/200,(ship.getY()-bomberList.get(randEnemy).getY())/200));
+		gamePane.getChildren().add(mineList.get(mineList.size()-1).getImageView());
+		}
+		//Move the fires
+		for(int i=0; i<mineList.size(); i++) {
+			mineList.get(i).move(1, 1);
+			mineList.get(i).countTimer();
+		if(mineList.get(i).getTimer() == 120) {
+			removeGameObject(mineList.get(i));
+			mineList.remove(i);
 		}
 	}
 	}
@@ -902,10 +943,11 @@ public class GameEngine extends Application{
 
 	private void wave6Set() {
 
-		pod1 = new MotherShip(ship.getX()+100,ship.getY()+50);
-		pod2 = new MotherShip(ship.getX()+200,ship.getY()+100);
+		pod1 = new MotherShip(300,200);
+		pod2 = new MotherShip(600,200);
 		gamePane.getChildren().add(pod1.getImageView());
 		gamePane.getChildren().add(pod2.getImageView());
+		setBombers(0,300,6);
 	}
 
 	private void processWave6() {
@@ -938,6 +980,7 @@ public class GameEngine extends Application{
 			gamePane.getChildren().remove(pod2.getImageView());
 			pod2 = null;
 		}
+		moveBombers();
 	}
 
 	private void processWave1Final() {
@@ -975,7 +1018,14 @@ public class GameEngine extends Application{
 		}
 	}
 
-
+	private void setBombers(int x, int y, int size) {
+		for(int i=0; i<size; i++) {
+			int rand = (int)(Math.random() * 200) + 200;
+			bomberList.add(new Bomber(x,rand));
+			gamePane.getChildren().add(bomberList.get(i).getImageView());
+			x = x+200;
+		}
+	}
 	private void gameLoop() {
 		timer = new AnimationTimer() {
 

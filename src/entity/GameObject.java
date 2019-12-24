@@ -91,6 +91,10 @@ public void setDirection(int x) {
 	xDirection = x;
 }
 
+public void setYDirection(int x) {
+	yDirection = x;
+}
+
 public void setSpeed(int x) {
 	xSpeed = x;
 	ySpeed = x;
