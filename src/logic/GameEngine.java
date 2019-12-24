@@ -176,7 +176,7 @@ public class GameEngine extends Application{
 		bulletNumber = 0;
 		wave1= false;
 		wave2 = false;
-		waveNumber = 1;
+		waveNumber = -1;
 		wave1Final = false;
 		wave2Final = false;
 		wave3 = false;
@@ -188,7 +188,7 @@ public class GameEngine extends Application{
 		wave6 = false;
 		wave6Final = false;
 		wave7 = false;
-		wave7Final = false;
+		wave7Final = true;
 		astranoutList = new LinkedList<Astronaut>();
 		rectList = new LinkedList<Rectangle>();
 		landerList = new LinkedList<Lander>();
