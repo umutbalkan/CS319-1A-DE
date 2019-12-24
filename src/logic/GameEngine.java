@@ -14,6 +14,7 @@ import java.util.TimerTask;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.event.EventHandler;
+import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -24,6 +25,9 @@ import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundImage;
 import javafx.scene.layout.BackgroundPosition;
 import javafx.scene.layout.BackgroundRepeat;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
@@ -49,6 +53,7 @@ import io.HighScoreManager;
 public class GameEngine extends Application{
 
 	private LayoutManager layout;
+	private VBox root;
 	private MainMenu mainmenu;
 	private HighScoresMenu highscoremenu;
 	private CreditsMenu creditsmenu;
@@ -62,7 +67,7 @@ public class GameEngine extends Application{
 	private InputManager inputManager;
 	private CollisionManager collisionManager;
 	private SoundManager soundManager;
-	private AnchorPane gamePane;
+	private Pane gamePane;
 	private Scene gameScene;
 	private Stage gameStage;
 	private AnimationTimer timer;
@@ -115,6 +120,7 @@ public class GameEngine extends Application{
 	private SettingsMenu settingsmenu;
 	private PauseMenu pausemenu;
 	private int bomb;
+	private HBox topVBox;
 	private void initGameObject() {
 		//Create lists, ship, wave conditions
 
@@ -1079,20 +1085,24 @@ public class GameEngine extends Application{
 		highscoremenu = layout.getLayoutHighScores();
 		creditsmenu = layout.getLayoutCredits();
 		pausemenu = layout.getLayoutPause();
-		gamePane = new AnchorPane();
+		root = new VBox();
+		gamePane = new Pane();
+		topVBox = new HBox();
 	}
 	
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 
 		gameScene = new Scene(layout, 1280, 800);
+		root.getChildren().add(topVBox);
+		root.getChildren().add(gamePane);
 		gameStage = primaryStage;
 		gameStage.setScene(gameScene);
 
 
 		backgroundUrl = null;
 		try {
-			backgroundUrl = new FileInputStream("./assets/playBG.png");
+			backgroundUrl = new FileInputStream("./assets/playBG1.png");
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
