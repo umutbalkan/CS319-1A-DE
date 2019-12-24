@@ -13,6 +13,8 @@ import javafx.scene.image.ImageView;
 public class Bullet extends GameObject{
 
 	private FileInputStream bombIm;
+	private FileInputStream bugIm;
+	private FileInputStream mineIm;
   //Constructor
   public Bullet(double x, double y, double d, double f){
     super(x,y);
@@ -28,6 +30,20 @@ public class Bullet extends GameObject{
 	bombIm = null;
 	try {
 		bombIm = new FileInputStream("./assets/bomb.png");
+	} catch (FileNotFoundException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+	bugIm = null;
+	try {
+		bugIm = new FileInputStream("./assets/bug.png");
+	} catch (FileNotFoundException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+	mineIm = null;
+	try {
+		mineIm = new FileInputStream("./assets/mine.png");
 	} catch (FileNotFoundException e) {
 		// TODO Auto-generated catch block
 		e.printStackTrace();
@@ -69,6 +85,14 @@ public class Bullet extends GameObject{
 	  rect.setHeight(800);
   }
   
+  public void setBugWidth() {
+	  rect.setWidth(20);
+  }
+  
+  public void setBugHeight() {
+	  rect.setHeight(20);
+  }
+  
   public int getTimer() {
 		return timer;
 	}
@@ -77,5 +101,17 @@ public class Bullet extends GameObject{
 	  imageView.setImage(new Image(bombIm));
 	  setWidth();
 	  setHeight();
+  }
+  
+  public void setBug() {
+	  imageView.setImage(new Image(bugIm));
+	  setBugWidth();
+	  setBugHeight();
+  }
+  
+  public void setMine() {
+	  imageView.setImage(new Image(mineIm));
+	  rect.setWidth(20);
+	  rect.setHeight(20);
   }
 }
