@@ -133,7 +133,7 @@ public class GameEngine extends Application{
 		bulletNumber = 0;
 		wave1= false;
 		wave2 = false;
-		waveNumber = 2;
+		waveNumber = 1;
 		wave1Final = false;
 		wave2Final = false;
 		wave3 = false;
@@ -165,11 +165,8 @@ public class GameEngine extends Application{
 			//MoveShip and FireBullet runs in every wave
 			moveShip();
 			fireBullet();
-			/*
-			//Start first wave
 			initWave1();
-			//Start second wave
-			*/
+			
 			initWave2();
 			initWave3();  //To start from a wave, set waveNumber to its wave, and make comment the upper init methods
 			initWave4();
