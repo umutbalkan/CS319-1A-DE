@@ -13,6 +13,7 @@ import java.util.TimerTask;
 
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
+import javafx.beans.binding.Bindings;
 import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Scene;
@@ -26,6 +27,7 @@ import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundImage;
 import javafx.scene.layout.BackgroundPosition;
 import javafx.scene.layout.BackgroundRepeat;
+import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
@@ -33,6 +35,7 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import sound.SoundManager;
@@ -134,10 +137,12 @@ public class GameEngine extends Application{
 	private Pane rightTop;
 	private Font font2;
 	private Label score_label;
+	private Rectangle clip;
+	private int x;
 	private void initGameObject() {
 		//Create lists, ship, wave conditions
 
-		ship = new Ship(40,160);
+		ship = new Ship(640,410);
 		gamePane.getChildren().add(ship.getImageView());
 		shipBulletList = new LinkedList<Bullet>();
 		bomberList = new LinkedList<Bomber>();
@@ -177,6 +182,7 @@ public class GameEngine extends Application{
 
 	private void processGame() {
 		//Process method of the game
+		clip.setX(ship.getX() - gameScene.getWidth() / 2);
 		if(ship.getNumberOfLives()!=0) {
 			//MoveShip and FireBullet runs in every wave
 			update_scoreLabel();
@@ -628,9 +634,7 @@ public class GameEngine extends Application{
 		//Select random fire time
 		int randomFire = (int)(Math.random() * 100) + 0;
 		//Create fire from the coordinates of the lander, direction to ship
-		System.out.println(bomberList.size());
 		if(randomFire == 5 && bomberList.size()!=0) {
-			System.out.println("sa");
 			mineList.add(new Bullet(bomberList.get(randEnemy).getX(),bomberList.get(randEnemy).getY(),
 				1,1));
 			mineList.get(mineList.size()-1).setMine();
@@ -650,7 +654,6 @@ public class GameEngine extends Application{
 		}
 		//Move the fires
 		for(int i=0; i<mineList.size(); i++) {
-			System.out.println("sa");
 			mineList.get(i).move(1, 1);
 			mineList.get(i).countTimer();
 		if(mineList.get(i).getTimer() == 120) {
@@ -977,7 +980,6 @@ public class GameEngine extends Application{
 			gamePane.getChildren().remove(baiter.getImageView());
 			baiter = null;
 			baiterNumber = baiterNumber - 1;
-			System.out.println(baiterNumber);
 		}
 		checkCollision();
 
@@ -1136,7 +1138,6 @@ public class GameEngine extends Application{
 
 			@Override
 			public void handle(long arg0) {
-				
 				// play screen
 				if(layout.getChildren().get(0) == root) {
 					if(inputManager.getEsc()) {
@@ -1248,7 +1249,7 @@ public class GameEngine extends Application{
 		pausemenu = layout.getLayoutPause();
 		root = new VBox();
 		gamePane = new Pane();
-		gamePane.setPrefSize(1280, 720);
+		gamePane.setPrefSize(5280, 720);
 		topVBox = new HBox();
 		leftTop = new Pane();
 		leftTop.setPrefSize(300, 100);
@@ -1265,7 +1266,6 @@ public class GameEngine extends Application{
 	
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-
 		gameScene = new Scene(layout, 1280, 820);
 		topVBox.getChildren().addAll(leftTop,map,rightTop);
 		root.getChildren().add(topVBox);
@@ -1298,7 +1298,8 @@ public class GameEngine extends Application{
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
-		BackgroundImage image = new BackgroundImage(new Image(backgroundUrl), BackgroundRepeat.REPEAT, BackgroundRepeat.REPEAT, BackgroundPosition.DEFAULT, null);
+		Image img = new Image(backgroundUrl);
+		BackgroundImage image = new BackgroundImage(img, BackgroundRepeat.REPEAT, BackgroundRepeat.REPEAT, BackgroundPosition.DEFAULT, BackgroundSize.DEFAULT);
 		lifeOne = new ImageView(new Image(life1));
 		lifeTwo = new ImageView(new Image(life2));
 		lifeThree = new ImageView(new Image(life));
@@ -1318,7 +1319,7 @@ public class GameEngine extends Application{
 		lifeTwo.setY(0);
 		lifeThree.setX(120);
 		lifeThree.setY(0);
-		score_label = new Label("0");
+		score_label = new Label("000");
 		score_label.setFont(font2);
 		score_label.setTextFill(Color.web("#ffd500"));
 		score_label.setTranslateX(100);
@@ -1327,16 +1328,33 @@ public class GameEngine extends Application{
 		leftTop.getChildren().addAll(iBomb1,iBomb2,iBomb3);
 		leftTop.getChildren().add(score_label);
 		gamePane.setBackground(new Background(image));
+		
+		
+		clip = new Rectangle();
+        clip.widthProperty().bind(gameScene.widthProperty());
+        clip.heightProperty().bind(gameScene.heightProperty());
+        //double d = ship.getX();
+        //clip.xProperty().bind(null);
+        		//ship.getX(), 
+        gamePane.setClip(clip);
+        gamePane.translateXProperty().bind(clip.xProperty().multiply(-1));
+        
 		initGameObject();
 		gameLoop();
 		gameStage.show();
+	}
+	
+	private double clampRange(double value, double min, double max) {
+	        if (value < min) return min ;
+	        if (value > max) return max ;
+	        return value ;
 	}
 
 
 	public static void main(String args[]){
 
 	    Application.launch(args);
-
+	    
 	}
 
 }

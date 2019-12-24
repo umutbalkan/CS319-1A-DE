@@ -2,6 +2,8 @@ package entity;
 import java.awt.Graphics;
 import java.io.FileInputStream;
 
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.shape.*;
@@ -25,6 +27,7 @@ protected double yDirection;
 protected int ySpeed;
 protected int xSpeed;
 protected double xCoordinate;
+protected DoubleProperty x0Coordinate;
 protected double yCoordinate;
 protected FileInputStream url;
 protected int timer;
@@ -69,6 +72,11 @@ public void setY(double y) {
 
 public double getX() {
 	return xCoordinate;
+}
+
+public DoubleProperty getX0() {
+	x0Coordinate.set(xCoordinate);
+	return x0Coordinate;
 }
 
 public double getY() {
