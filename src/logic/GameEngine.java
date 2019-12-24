@@ -67,6 +67,7 @@ import io.HighScoreManager;
 
 public class GameEngine extends Application{
 
+	private Rectangle rectangle;
 	private LayoutManager layout;
 	private VBox root;
 	private MainMenu mainmenu;
@@ -76,6 +77,7 @@ public class GameEngine extends Application{
 	private Stage window;
 	private int width;
 	private int height;
+	private Rectangle tempRect;
 	private MediaPlayer mediaPlayer;
 	private ImageView shipView;
 	private HighScoreManager highscoreManager;
@@ -177,7 +179,7 @@ public class GameEngine extends Application{
 		bulletNumber = 0;
 		wave1= false;
 		wave2 = false;
-		waveNumber = -1;
+		waveNumber = 1;
 		wave1Final = false;
 		wave2Final = false;
 		wave3 = false;
@@ -189,7 +191,7 @@ public class GameEngine extends Application{
 		wave6 = false;
 		wave6Final = false;
 		wave7 = false;
-		wave7Final = true;
+		wave7Final = false;
 		astranoutList = new LinkedList<Astronaut>();
 		rectList = new LinkedList<Rectangle>();
 		landerList = new LinkedList<Lander>();
@@ -223,13 +225,16 @@ public class GameEngine extends Application{
 			clip.setX(clipMin);
 		}
 		
+		for(int i = 0; i < landerList.size(); i++) {
+			tempRect = rectList.get(i);
+			double dx = landerList.get(i).getX() / 8.2;
+			double dy = landerList.get(i).getY() / 8.2;
+			tempRect.setTranslateX(dx);
+			tempRect.setTranslateY(dy);
+		}
+		
 		if(ship.getNumberOfLives()!=0) {
-//			for(int i = 0; i < landerList.size(); i++) {
-//				double x = landerList.get(i).getX();
-//				double y = landerList.get(i).getY();
-//				Rectangle rectangle =  new Rectangle(,,10, 10);
-//				rect.setStroke(Color.RED);
-//			}
+
 			gc.fillRect(0, 0, 100, 100);
 			//MoveShip and FireBullet runs in every wave
 			update_scoreLabel();
@@ -700,6 +705,9 @@ public class GameEngine extends Application{
 			//Move the lander
 			landerList.get(i).move();
 			}
+		for(int i=0; i<landerList.size(); i++) {
+			
+		}
 	}
 	
 	private void moveBombers() {
@@ -1377,7 +1385,7 @@ public class GameEngine extends Application{
 		for(int i=0; i<size; i++) {
 			astranoutList.add(new Astronaut(x,y));
 			gamePane.getChildren().add(astranoutList.get(i).getImageView());
-			x = x+400;
+			x = x+200;
 		}
 	}
 
@@ -1386,7 +1394,15 @@ public class GameEngine extends Application{
 			int rand = (int)(Math.random() * 200) + 200;
 			landerList.add(new Lander(x,rand));
 			gamePane.getChildren().add(landerList.get(i).getImageView());
-			x = x+400;
+			x = x+200;
+		}
+		for(int i = 0; i < landerList.size(); i++) {
+				double rx = (landerList.get(i).getX() / 8.2) - 40;
+				double ry = (landerList.get(i).getY() - 300) / 8.2;
+				rectangle =  new Rectangle(rx,ry,4,4);
+				rectangle.setFill(Color.RED);
+				rectList.add(rectangle);
+				map.getChildren().add(rectList.get(i));
 		}
 	}
 
@@ -1519,7 +1535,7 @@ public class GameEngine extends Application{
 		leftTop.setPrefSize(300, 100);
 		leftTop.setStyle("-fx-background-color: black;");
 		map = new Pane();
-		map.setPrefSize(680, 100);
+		map.setPrefSize(470, 100);
 		//map.setStyle("-fx-background-color: black;");
 
 		canvasBot = new Canvas(40,70);
@@ -1528,7 +1544,7 @@ public class GameEngine extends Application{
 		//g.fillRect(0, 0, canvasBot.getWidth(), canvasBot.getHeight());
 		//Rectangle backRect = new Rectangle(0,0,3840,720);
 		//backRect.setStroke(Color.BLACK);
-		canvas = new Canvas(680,100);
+		canvas = new Canvas(470,100);
 		gc = canvas.getGraphicsContext2D();
 		mapDrawer = gc.getPixelWriter();
 //		mapDrawer.setColor(20, 20, Color.RED);
@@ -1536,7 +1552,7 @@ public class GameEngine extends Application{
 //		mapDrawer.setColor(21, 20, Color.RED);
 //		mapDrawer.setColor(21, 21, Color.BLUE);
 //		//gc.setLineWidth(2.0);
-		gc.setFill(Color.RED);
+		gc.setFill(Color.BLACK);
 		gc.fillRect(0, 0, 470, 100);
 
 		map.getChildren().add(canvas);
@@ -1560,7 +1576,6 @@ public class GameEngine extends Application{
 		gameStage = primaryStage;
 		gameStage.setScene(gameScene);
 		
-
 		
 		backgroundUrl = null; 
 		inputManager = InputManager.getInstance(gameScene);
