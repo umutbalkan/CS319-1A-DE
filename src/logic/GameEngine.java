@@ -36,7 +36,6 @@ import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
@@ -158,9 +157,6 @@ public class GameEngine extends Application{
 	private Canvas canvas;
 	private GraphicsContext gc;
 	private PixelWriter mapDrawer;
-	private LinkedList<Rectangle> rectList;
-	private Canvas canvasBot;
-	private GraphicsContext g;
 	private void initGameObject() {
 		//Create lists, ship, wave conditions
 
@@ -190,7 +186,6 @@ public class GameEngine extends Application{
 		wave7 = false;
 		wave7Final = false;
 		astranoutList = new LinkedList<Astronaut>();
-		rectList = new LinkedList<Rectangle>();
 		landerList = new LinkedList<Lander>();
 		enemyBulletList = new LinkedList<Bullet>();
 		swarmerList = new LinkedList<Swarmer>();
@@ -219,17 +214,9 @@ public class GameEngine extends Application{
 			clip.setX(0);
 		}
 		else {
-			clip.setX(clipMin);
+		clip.setX(clipMin);
 		}
-		
 		if(ship.getNumberOfLives()!=0) {
-//			for(int i = 0; i < landerList.size(); i++) {
-//				double x = landerList.get(i).getX();
-//				double y = landerList.get(i).getY();
-//				Rectangle rectangle =  new Rectangle(,,10, 10);
-//				rect.setStroke(Color.RED);
-//			}
-			gc.fillRect(0, 0, 100, 100);
 			//MoveShip and FireBullet runs in every wave
 			update_scoreLabel();
 			moveShip();
@@ -802,6 +789,7 @@ public class GameEngine extends Application{
 		//Check the collision of ship bullets and the landers
 		for(int i=0; i<shipBulletList.size(); i++) {
 			for(int j=0; j<landerList.size(); j++) {
+				if(collisionManager.isCollide(landerList.get(j),shipBulletList.get(i)))
 				{
 					if(landerList.get(j).getHasAstronaut())
 					landerList.get(j).getAstronaut().setFree();
@@ -1428,28 +1416,11 @@ public class GameEngine extends Application{
 		map = new Pane();
 		map.setPrefSize(680, 100);
 		//map.setStyle("-fx-background-color: black;");
-
-		canvasBot = new Canvas(40,70);
-		//g = canvasBot.getGraphicsContext2D();
-		//g.setFill(Color.BLACK);
-		//g.fillRect(0, 0, canvasBot.getWidth(), canvasBot.getHeight());
-		//Rectangle backRect = new Rectangle(0,0,3840,720);
-		//backRect.setStroke(Color.BLACK);
 		canvas = new Canvas(680,100);
 		gc = canvas.getGraphicsContext2D();
-		mapDrawer = gc.getPixelWriter();
-//		mapDrawer.setColor(20, 20, Color.RED);
-//		mapDrawer.setColor(20, 21, Color.BLUE);
-//		mapDrawer.setColor(21, 20, Color.RED);
-//		mapDrawer.setColor(21, 21, Color.BLUE);
-//		//gc.setLineWidth(2.0);
+		mapDrawer = canvas.getGraphicsContext2D().getPixelWriter();
 		gc.setFill(Color.RED);
-		gc.fillRect(0, 0, 470, 100);
-
-		map.getChildren().add(canvas);
-		
-		
-
+		gc.fillRect(100, 200, 50, 50);
 		rightTop = new Pane();
 		rightTop.setPrefSize(300, 100);
 		rightTop.setStyle("-fx-background-color: gray;");
@@ -1466,7 +1437,6 @@ public class GameEngine extends Application{
 		root.getChildren().add(gamePane);
 		gameStage = primaryStage;
 		gameStage.setScene(gameScene);
-		
 
 		
 		backgroundUrl = null; 
@@ -1495,7 +1465,6 @@ public class GameEngine extends Application{
 		}
 		Image img = new Image(backgroundUrl);
 		BackgroundImage image = new BackgroundImage(img, BackgroundRepeat.REPEAT, BackgroundRepeat.REPEAT, BackgroundPosition.DEFAULT, BackgroundSize.DEFAULT);
-		
 		lifeOne = new ImageView(new Image(life1));
 		lifeTwo = new ImageView(new Image(life2));
 		lifeThree = new ImageView(new Image(life));
@@ -1523,7 +1492,7 @@ public class GameEngine extends Application{
 		leftTop.getChildren().addAll(lifeOne,lifeTwo,lifeThree);
 		leftTop.getChildren().addAll(iBomb1,iBomb2,iBomb3);
 		leftTop.getChildren().add(score_label);
-		//gamePane.setBackground(new Background(image));
+		gamePane.setBackground(new Background(image));
 		//gamePane.setBackground(new Background(new BackgroundFill(Color.web("#0FFFFF"), CornerRadii.EMPTY, Insets.EMPTY)));
 		//GraphicsContext gc = new GraphicsContext(null);
 		
@@ -1534,12 +1503,10 @@ public class GameEngine extends Application{
         //double d = ship.getX();
         //clip.xProperty().bind(null);
         		//ship.getX(), 
-
         gamePane.setClip(clip);
         gamePane.translateXProperty().bind(clip.xProperty().multiply(-1));
 
-
-
+		
         
 		initGameObject();
 		gameLoop();
