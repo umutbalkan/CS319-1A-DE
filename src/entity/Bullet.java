@@ -15,6 +15,7 @@ public class Bullet extends GameObject{
 	private FileInputStream bombIm;
 	private FileInputStream bugIm;
 	private FileInputStream mineIm;
+	private FileInputStream bug2Im;
   //Constructor
   public Bullet(double x, double y, double d, double f){
     super(x,y);
@@ -44,6 +45,13 @@ public class Bullet extends GameObject{
 	mineIm = null;
 	try {
 		mineIm = new FileInputStream("./assets/mine.png");
+	} catch (FileNotFoundException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+	bug2Im = null;
+	try {
+		bug2Im = new FileInputStream("./assets/bug2.png");
 	} catch (FileNotFoundException e) {
 		// TODO Auto-generated catch block
 		e.printStackTrace();
@@ -113,5 +121,11 @@ public class Bullet extends GameObject{
 	  imageView.setImage(new Image(mineIm));
 	  rect.setWidth(20);
 	  rect.setHeight(20);
+  }
+  
+  public void setBug2() {
+	  imageView.setImage(new Image(bug2Im));
+	  setBugWidth();
+	  setBugHeight();
   }
 }
