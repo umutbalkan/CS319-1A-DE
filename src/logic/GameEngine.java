@@ -15,8 +15,10 @@ import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -24,10 +26,12 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BackgroundImage;
 import javafx.scene.layout.BackgroundPosition;
 import javafx.scene.layout.BackgroundRepeat;
 import javafx.scene.layout.BackgroundSize;
+import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
@@ -141,6 +145,7 @@ public class GameEngine extends Application{
 	private Label score_label;
 	private Rectangle clip;
 	private int x;
+	private double clipMin;
 	private void initGameObject() {
 		//Create lists, ship, wave conditions
 
@@ -156,7 +161,7 @@ public class GameEngine extends Application{
 		bulletNumber = 0;
 		wave1= false;
 		wave2 = false;
-		waveNumber = 6;
+		waveNumber = 1;
 		wave1Final = false;
 		wave2Final = false;
 		wave3 = false;
@@ -186,22 +191,31 @@ public class GameEngine extends Application{
 
 	private void processGame() {
 		//Process method of the game
-		clip.setX(ship.getX() - gameScene.getWidth() / 2);
+		clipMin = ship.getX() - gameScene.getWidth()/2;
+		if(clipMin <= 0) {
+			clip.setX(0);
+		}
+		else {
+		clip.setX(clipMin);
+		}
 		if(ship.getNumberOfLives()!=0) {
 			//MoveShip and FireBullet runs in every wave
 			update_scoreLabel();
 			moveShip();
 			fireBullet();
-			/*
+			
 			initWave1();
 			
 			initWave2();
 			initWave3();  //To start from a wave, set waveNumber to its wave, and make comment the upper init methods
 			initWave4();
 			initWave5();
-			*/
+			
 			initWave6();
 			initWave7();
+		}
+		if(ship.getNumberOfLives() == 0) {
+			gameStage.close();
 		}
 	}
 
@@ -1262,7 +1276,6 @@ public class GameEngine extends Application{
 	}
 	private void gameLoop() {
 		timer = new AnimationTimer() {
-
 			@Override
 			public void handle(long arg0) {
 				// play screen
@@ -1376,7 +1389,7 @@ public class GameEngine extends Application{
 		pausemenu = layout.getLayoutPause();
 		root = new VBox();
 		gamePane = new Pane();
-		gamePane.setPrefSize(5280, 720);
+		gamePane.setPrefSize(1280, 720);
 		topVBox = new HBox();
 		leftTop = new Pane();
 		leftTop.setPrefSize(300, 100);
@@ -1388,6 +1401,8 @@ public class GameEngine extends Application{
 		rightTop = new Pane();
 		rightTop.setPrefSize(300, 100);
 		rightTop.setStyle("-fx-background-color: gray;");
+		
+		clipMin = 0;
 		
 	}
 	
@@ -1455,9 +1470,11 @@ public class GameEngine extends Application{
 		leftTop.getChildren().addAll(iBomb1,iBomb2,iBomb3);
 		leftTop.getChildren().add(score_label);
 		gamePane.setBackground(new Background(image));
-		
+		//gamePane.setBackground(new Background(new BackgroundFill(Color.web("#0FFFFF"), CornerRadii.EMPTY, Insets.EMPTY)));
+		//GraphicsContext gc = new GraphicsContext(null);
 		
 		clip = new Rectangle();
+		//clip.setX(11280);
         clip.widthProperty().bind(gameScene.widthProperty());
         clip.heightProperty().bind(gameScene.heightProperty());
         //double d = ship.getX();
