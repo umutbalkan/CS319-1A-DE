@@ -66,6 +66,7 @@ import io.HighScoreManager;
 
 public class GameEngine extends Application{
 
+	private LinkedList<Rectangle> rectList;
 	private LayoutManager layout;
 	private VBox root;
 	private MainMenu mainmenu;
@@ -152,11 +153,16 @@ public class GameEngine extends Application{
 	private int wave4con;
 	private int wave5con;
 	private int wave6con;
+	private Rectangle rect;
 	private int wave7con;
 	private double clipMin;
 	private Canvas canvas;
 	private GraphicsContext gc;
 	private PixelWriter mapDrawer;
+	private Canvas cvas;
+	private GraphicsContext g;
+	private Canvas canvasI;
+	private GraphicsContext gr;
 	private void initGameObject() {
 		//Create lists, ship, wave conditions
 
@@ -172,7 +178,7 @@ public class GameEngine extends Application{
 		bulletNumber = 0;
 		wave1= false;
 		wave2 = false;
-		waveNumber = 1;
+		waveNumber =6 ;
 		wave1Final = false;
 		wave2Final = false;
 		wave3 = false;
@@ -181,7 +187,7 @@ public class GameEngine extends Application{
 		wave4Final = false;
 		wave5 = false;
 		wave5Final = false;
-		wave6 = false;
+		wave6 = true;
 		wave6Final = false;
 		wave7 = false;
 		wave7Final = false;
@@ -191,6 +197,7 @@ public class GameEngine extends Application{
 		swarmerList = new LinkedList<Swarmer>();
 		mutantList = new LinkedList<Mutant>();
 		mineList = new LinkedList<Bullet>();
+		rectList = new LinkedList<Rectangle>();
 		boo=1;
 		baiterNumber = 5;
 		con=0;
@@ -213,9 +220,21 @@ public class GameEngine extends Application{
 		if(clipMin <= 0) {
 			clip.setX(0);
 		}
+		else if(ship.getX() >= 3200 && clipMin > 0) {
+			clip.setX(2560);
+		}
 		else {
 		clip.setX(clipMin);
 		}
+		System.out.println(gamePane.getWidth());
+		
+		for(int i = 0; i < landerList.size(); i++) {
+			double dx = landerList.get(i).getX() / 8.2;
+			double dy = landerList.get(i).getY() / 8.2;
+			rectList.get(i).setTranslateX(dx);
+			rectList.get(i).setTranslateY(dy);
+		}
+		
 		if(ship.getNumberOfLives()!=0) {
 			//MoveShip and FireBullet runs in every wave
 			update_scoreLabel();
@@ -791,14 +810,20 @@ public class GameEngine extends Application{
 			for(int j=0; j<landerList.size(); j++) {
 				if(collisionManager.isCollide(landerList.get(j),shipBulletList.get(i)))
 				{
-					if(landerList.get(j).getHasAstronaut())
-					landerList.get(j).getAstronaut().setFree();
+					if(landerList.get(j).getHasAstronaut()) {
+						landerList.get(j).getAstronaut().setFree();
+					}
 					removeGameObject(landerList.get(j));
+					
+					rectList.get(j).setFill(Color.BLACK);
+					rectList.remove(j);
 					removeGameObject(shipBulletList.get(i));
-					shipBulletList.remove(i);
+					//shipBulletList.remove(i);
+					
 					landerList.remove(j);
 					ship.setScore(ship.getScore()+150);
 					soundManager.play("score");
+					System.out.println(landerList.size());
 				}
 			}
 		}
@@ -806,7 +831,7 @@ public class GameEngine extends Application{
 		//Check the collision of enemy bullets and the ship
 		for(int i=0; i<enemyBulletList.size(); i++) {
 			if(collisionManager.isCollide(ship,enemyBulletList.get(i))) {
-				ship.decreaseLife();
+			ship.decreaseLife();
 			removeGameObject(enemyBulletList.get(i));
 			enemyBulletList.remove(i);
 			soundManager.play("crash");
@@ -859,11 +884,13 @@ public class GameEngine extends Application{
 		//Check the collision of the landers and the ship
 		for(int i=0; i<landerList.size(); i++) {
 			if(collisionManager.isCollide(ship, landerList.get(i))) {
+				removeGameObject(landerList.get(i));
+				landerList.remove(i);
+				//System.out.println(ship.getNumberOfLives());
 				ship.decreaseLife();
-				ship.setX(40);
-				ship.setY(40);
 				soundManager.play("crash");
 				if(lifeThree != null) {
+					System.out.println(ship.getNumberOfLives());
 					leftTop.getChildren().remove(lifeThree);
 					lifeThree = null;
 				}
@@ -1160,7 +1187,7 @@ public class GameEngine extends Application{
 			ship.move(0, -3);
 
 		if(inputManager.getBoost()) {
-			ship.setSpeed(2);
+			ship.setSpeed(3);
 			soundManager.play("speed");
 		}
 		if(inputManager.getBoost()==false)
@@ -1175,8 +1202,8 @@ public class GameEngine extends Application{
 	}
 
 	private void wave1Set() {
-		setAstranouts(0,600,18);
-		setLanders(0,300,18);
+		setAstranouts(0,650,10);
+		setLanders(0,300,10);
 	}
 
 	private void wave2Set() {
@@ -1281,7 +1308,13 @@ public class GameEngine extends Application{
 			int rand = (int)(Math.random() * 200) + 200;
 			landerList.add(new Lander(x,rand));
 			gamePane.getChildren().add(landerList.get(i).getImageView());
-			x = x+400;
+			double rx = x / 40;
+			double ry = (y - 200) / 7.2;
+			rect = new Rectangle(rx,ry,4,4);
+			rect.setFill(Color.RED);
+			rectList.add(rect);
+			map.getChildren().add(rect);
+			x += 400;
 		}
 	}
 
@@ -1290,7 +1323,7 @@ public class GameEngine extends Application{
 			int rand = (int)(Math.random() * 200) + 200;
 			bomberList.add(new Bomber(x,rand));
 			gamePane.getChildren().add(bomberList.get(i).getImageView());
-			x = x+200;
+			x = x+400;
 		}
 	}
 	private void gameLoop() {
@@ -1392,7 +1425,7 @@ public class GameEngine extends Application{
 
 	public void removeGameObject(GameObject obj) {
 		gamePane.getChildren().remove(obj.getImageView());
-		obj.setNull();
+		//obj.setNull();
 	}
 
 	public Stage getStage() {
@@ -1407,37 +1440,59 @@ public class GameEngine extends Application{
 		creditsmenu = layout.getLayoutCredits();
 		pausemenu = layout.getLayoutPause();
 		root = new VBox();
+		canvasI = new Canvas(1280,2);
+		gr = canvasI.getGraphicsContext2D();
+		gr.setFill(Color.GRAY);
+		gr.fillRect(0,100,1280,100);
 		gamePane = new Pane();
-		gamePane.setPrefSize(1280, 720);
+		gamePane.setPrefSize(3840, 720);
+		cvas = new Canvas(3840,720);
+		int numOfStars = 210;
+		g = cvas.getGraphicsContext2D();
+		g.setFill(Color.BLACK);
+		g.fillRect(0, 0, 3840, 720);
+		g.setFill(Color.WHITE);
+		for(int i = 0; i < numOfStars; i++) {
+			Random r = new Random();
+			int x = r.nextInt(3840); //generate a value between 0 and 100
+			int y = r.nextInt(3840);
+			g.fillRect(x, y, 6, 5);
+		}
 		topVBox = new HBox();
 		leftTop = new Pane();
 		leftTop.setPrefSize(300, 100);
 		leftTop.setStyle("-fx-background-color: black;");
 		map = new Pane();
-		map.setPrefSize(680, 100);
+		map.setPrefSize(680, 99);
 		//map.setStyle("-fx-background-color: black;");
 		canvas = new Canvas(680,100);
 		gc = canvas.getGraphicsContext2D();
 		mapDrawer = canvas.getGraphicsContext2D().getPixelWriter();
-		gc.setFill(Color.RED);
-		gc.fillRect(100, 200, 50, 50);
+		gc.setFill(Color.BLACK);
+		gc.fillRect(0, 0, 680, 100);
+		map.getChildren().add(canvas);
+		
+		
 		rightTop = new Pane();
 		rightTop.setPrefSize(300, 100);
-		rightTop.setStyle("-fx-background-color: gray;");
+		rightTop.setStyle("-fx-background-color: black;");
 		
 		clipMin = 0;
-		
+		gamePane.getChildren().add(cvas);
 	}
 	
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		gameScene = new Scene(layout, 1280, 820);
 		topVBox.getChildren().addAll(leftTop,map,rightTop);
+		
 		root.getChildren().add(topVBox);
+		root.getChildren().add(canvasI);
 		root.getChildren().add(gamePane);
+		
 		gameStage = primaryStage;
 		gameStage.setScene(gameScene);
-
+		gameStage.setResizable(false);
 		
 		backgroundUrl = null; 
 		inputManager = InputManager.getInstance(gameScene);
@@ -1492,7 +1547,7 @@ public class GameEngine extends Application{
 		leftTop.getChildren().addAll(lifeOne,lifeTwo,lifeThree);
 		leftTop.getChildren().addAll(iBomb1,iBomb2,iBomb3);
 		leftTop.getChildren().add(score_label);
-		gamePane.setBackground(new Background(image));
+		//gamePane.setBackground(new Background(image));
 		//gamePane.setBackground(new Background(new BackgroundFill(Color.web("#0FFFFF"), CornerRadii.EMPTY, Insets.EMPTY)));
 		//GraphicsContext gc = new GraphicsContext(null);
 		
@@ -1503,7 +1558,7 @@ public class GameEngine extends Application{
         //double d = ship.getX();
         //clip.xProperty().bind(null);
         		//ship.getX(), 
-        gamePane.setClip(clip);
+        //gamePane.setClip(clip);
         gamePane.translateXProperty().bind(clip.xProperty().multiply(-1));
 
 		

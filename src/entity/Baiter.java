@@ -34,7 +34,7 @@ public class Baiter extends Enemy{
 		ySpeed = 2;
 		xDirection = 1;
 		yDirection = 1;
-		numberOfLives = 15;
+		numberOfLives = 4;
   }
   
   /*

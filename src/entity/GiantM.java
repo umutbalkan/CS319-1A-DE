@@ -35,7 +35,7 @@ public class GiantM extends Enemy{
 		ySpeed = 2;
 		xDirection = 1;
 		yDirection = 1;
-		numberOfLives = 400;
+		numberOfLives = 6;
 	}
 	
 	public void move(int x, int y) {
